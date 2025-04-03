@@ -7,33 +7,32 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/perfilador/perfilador.css') }}">
 </head>
 <body>
-    <header>
-
-    </header>
+    <header></header>
     <main>
         <section class="sidebar">
             <div class="sidebar_option_perfilado">
-                <img src="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}"  alt="icono de la opcion de perfilado de datos"/>
+                <img src="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}"  alt="icono perfilado"/>
                 <label>Perfilado de datos</label>
             </div>
             <div class="sidebar_option_matriz">
-                <img src="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}"  alt="icono de la opcion de perfilado de datos"/>
+                <img src="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}"  alt="icono matriz"/>
                 <label>Matriz de evaluación</label>
             </div>
             <div class="sidebar_option_reportes">
-                <img src="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}"  alt="icono de la opcion de perfilado de datos"/>
+                <img src="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}"  alt="icono reportes"/>
                 <label>Reportes</label>
             </div>
             <div class="sidebar_option_exportacion">
-                <img src="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}"  alt="icono de la opcion de perfilado de datos"/>
+                <img src="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}"  alt="icono exportación"/>
                 <label>Opciones de exportación</label>
             </div>
         </section>
+
         <section class="container">
             <section class="container_dbinfo">
                 <div class="container_dbinfo_card">
                     <div class="dbinfo_card_icon">
-                        <img src="{{ url_for('static', filename='img/perfilador/db_oracle_icon.png') }}"  alt="icono_db"/>
+                        <img src="{{ url_for('static', filename='img/perfilador/db_oracle_icon.png') }}" alt="icono_db"/>
                     </div>
                     <div class="db_info_card_data">
                         <label class="container_dbinfo_card_motor">Motor: <span class="db_info_card_value">Oracle XE</span></label>
@@ -42,11 +41,12 @@
                     </div>
                 </div>
             </section>
+
             <section class="table_selector_container">
                 <h2 class="container_header">Elige la tabla que quieres analizar</h2>
                 <section class="table_selector_cards_handler">
                     {% for table_info in tables_info %}
-                    <div class="cards_handler_card">
+                    <div class="cards_handler_card" data-table-name="{{ table_info['name'] }}">
                         <div class="table_icon_handler">
                             <img src="{{ url_for('static', filename='img/perfilador/table.png') }}" alt="table_icon"/>
                         </div>
@@ -69,9 +69,7 @@
                 </section>
             </section>
             
-        </section>
-            
-            <section class="table_profile_container">
+            <section id="table_profile_container" class="table_profile_container" style="display: none;">
                 <h2 class="container_header">Perfilado de la Tabla Seleccionada</h2>
                 <table class="profile_table">
                     <thead>
@@ -83,21 +81,56 @@
                             <th>Valores Únicos</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {% for row in profile_data %}
-                        <tr>
-                            <td>{{ row["Columna"] }}</td>
-                            <td>{{ row["Tipo de Dato"] }}</td>
-                            <td>{{ row["Valores Nulos (%)"]|round(2) }}%</td>
-                            <td>{{ row["Duplicados"] }}</td>
-                            <td>{{ row["Valores Únicos"] }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
+                    <tbody id="profile_table_body"></tbody>
                 </table>
             </section>
-
         </section>
     </main>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const tableCards = document.querySelectorAll(".cards_handler_card");
+        const profileContainer = document.getElementById("table_profile_container");
+        const profileTableBody = document.getElementById("profile_table_body");
+
+        tableCards.forEach(card => {
+            card.addEventListener("click", function () {
+                const tableName = this.getAttribute("data-table-name");
+
+                // Hacer una solicitud al backend
+                fetch(`http://localhost:5000/perfilar_tabla?table_name=${tableName}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            updateProfileTable(data.profile_data);
+                        } else {
+                            alert("Error al obtener los datos de la tabla.");
+                        }
+                    })
+                    .catch(error => console.error("Error en la petición:", error));
+            });
+        });
+
+        function updateProfileTable(profileData) {
+            profileTableBody.innerHTML = ""; // Limpiar tabla
+
+            profileData.forEach(row => {
+                const tr = document.createElement("tr");
+
+                ["Columna", "Tipo de Dato", "Valores Nulos (%)", "Duplicados", "Valores Únicos"].forEach(key => {
+                    const td = document.createElement("td");
+                    td.textContent = row[key];
+                    tr.appendChild(td);
+                });
+
+                profileTableBody.appendChild(tr);
+            });
+
+            // Mostrar el contenedor de perfilado
+            profileContainer.style.display = "block";
+        }
+    });
+    </script>
+
 </body>
 </html>
