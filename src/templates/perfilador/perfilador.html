@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motor de Calidad</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/perfilador/perfilador.css') }}">
+</head>
+<body>
+    <header>
+
+    </header>
+    <main>
+        <section class="sidebar">
+            <div class="sidebar_option_perfilado">
+                <img src="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}"  alt="icono de la opcion de perfilado de datos"/>
+                <label>Perfilado de datos</label>
+            </div>
+            <div class="sidebar_option_matriz">
+                <img src="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}"  alt="icono de la opcion de perfilado de datos"/>
+                <label>Matriz de evaluación</label>
+            </div>
+            <div class="sidebar_option_reportes">
+                <img src="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}"  alt="icono de la opcion de perfilado de datos"/>
+                <label>Reportes</label>
+            </div>
+            <div class="sidebar_option_exportacion">
+                <img src="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}"  alt="icono de la opcion de perfilado de datos"/>
+                <label>Opciones de exportación</label>
+            </div>
+        </section>
+        <section class="container">
+            <section class="container_dbinfo">
+                <div class="container_dbinfo_card">
+                    <div class="dbinfo_card_icon">
+                        <img src="{{ url_for('static', filename='img/perfilador/db_oracle_icon.png') }}"  alt="icono_db"/>
+                    </div>
+                    <div class="db_info_card_data">
+                        <label class="container_dbinfo_card_motor">Motor: <span class="db_info_card_value">Oracle XE</span></label>
+                        <label class="container_dbinfo_card_usuario">Usuario: <span class="db_info_card_value">Some1</span></label>
+                        <label class="container_dbinfo_card_version">Versión: <span class="db_info_card_value">V12.03</span></label>
+                    </div>
+                </div>
+            </section>
+            <section class="table_selector_container">
+                <h2 class="container_header">Elige la tabla que quieres analizar</h2>
+                <section class="table_selector_cards_handler">
+                    {% for table_info in tables_info %}
+                    <div class="cards_handler_card">
+                        <div class="table_icon_handler">
+                            <img src="{{ url_for('static', filename='img/perfilador/table.png') }}" alt="table_icon"/>
+                        </div>
+                        <div class="card_info">
+                            <div>
+                                <img src="{{ url_for('static', filename='img/perfilador/profiler_square.svg') }}" alt="name_icon"/>
+                                <label>Nombre: <span>{{ table_info['name'] }}</span></label>
+                            </div>
+                            <div>
+                                <img src="{{ url_for('static', filename='img/perfilador/profiler_column_icon.svg') }}" alt="column_icon"/>
+                                <label>Columnas: <span>{{ table_info['num_columns'] }}</span></label>
+                            </div>
+                            <div>
+                                <img src="{{ url_for('static', filename='img/perfilador/profiler_row_icon.svg') }}" alt="registro_icon"/>
+                                <label>Registros: <span>{{ table_info['num_rows'] }}</span></label>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </section>
+            </section>
+            
+        </section>
+            
+            <section class="table_profile_container">
+                <h2 class="container_header">Perfilado de la Tabla Seleccionada</h2>
+                <table class="profile_table">
+                    <thead>
+                        <tr>
+                            <th>Columna</th>
+                            <th>Tipo de Dato</th>
+                            <th>Valores Nulos (%)</th>
+                            <th>Duplicados</th>
+                            <th>Valores Únicos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in profile_data %}
+                        <tr>
+                            <td>{{ row["Columna"] }}</td>
+                            <td>{{ row["Tipo de Dato"] }}</td>
+                            <td>{{ row["Valores Nulos (%)"]|round(2) }}%</td>
+                            <td>{{ row["Duplicados"] }}</td>
+                            <td>{{ row["Valores Únicos"] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+
+        </section>
+    </main>
+</body>
+</html>
