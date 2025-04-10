@@ -1,0 +1,113 @@
+<h2>Configuración de criterio de calidad</h2>
+<label>Seleccionar peso del criterio</label>
+<div class="input_handler">
+    <input id="peso_criterio_usabilidad" placeholder="20"/>
+    <div class="unit_container"><span class="input_unit">%</span></div>
+</div>
+<label>Seleccionar columnas que aplicarán este criterio</label>
+<ul class="checklist" id="usabilidad-column-checklist"></ul>
+
+<button id="btn_confirmar_usabilidad">Confirmar</button>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const openPopupFromUrl = (url, callback) => {
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const popupOverlay = document.getElementById("popup-overlay");
+                const popupContent = document.getElementById("popup-content");
+
+                if (popupContent && popupOverlay) {
+                    popupContent.innerHTML = html;
+                    popupOverlay.classList.remove("hidden");
+
+                    if (callback) callback();
+                }
+
+                // Ahora manejamos el botón Confirmar, que está en el contenido cargado
+                const confirmarBtn = document.getElementById("btn_confirmar_usabilidad");
+                if (confirmarBtn) {
+                    confirmarBtn.addEventListener("click", () => {
+                        console.log('Botón Confirmar clickeado');
+                        const checkboxes = document.querySelectorAll("#usabilidad-column-checklist input[type='checkbox']:checked");
+                        const columnasSeleccionadas = [];
+
+                        checkboxes.forEach((checkbox) => {
+                            columnasSeleccionadas.push(checkbox.value);
+                        });
+
+                        // Verifica si las columnas están siendo seleccionadas
+                        console.log(columnasSeleccionadas);
+
+                        // Obtener el peso y las columnas desde localStorage
+                        const criterioUsabilidad = JSON.parse(localStorage.getItem("criterioUsabilidad"));
+                        
+                        // Si el criterioUsabilidad existe, actualizamos lo que sea necesario
+                        if (criterioUsabilidad) {
+                            console.log("Criterio Usabilidad recuperado:", criterioUsabilidad);
+                        }
+
+                        // Guardar las columnas seleccionadas en localStorage
+                        localStorage.setItem("criterioUsabilidad", JSON.stringify(columnasSeleccionadas));
+
+                        // Cerrar el popup (solo cuando se confirma)
+                        const popupOverlay = document.getElementById("popup-overlay");
+                        if (popupOverlay) {
+                            popupOverlay.classList.add("hidden");
+                        }
+                    });
+                }
+            })
+            .catch(error => console.error("Error cargando popup:", error));
+    };
+
+    const cargarColumnasDesdeLocalStorage = (ulId) => {
+        const profileData = JSON.parse(localStorage.getItem("profileData") || "[]");
+        const ul = document.getElementById(ulId);
+
+        if (!ul || profileData.length === 0) return;
+
+        profileData.forEach((col, index) => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+                <label>
+                    <input type="checkbox" name="columna_${index}" value="${col.Columna}" data-columna="${col.Columna}">
+                    ${col.Columna}
+                </label>`;
+            ul.appendChild(li);
+        });
+    };
+
+    const botonUsabilidad = document.getElementById("configurar_usabilidad");
+    if (botonUsabilidad) {
+        botonUsabilidad.addEventListener("click", () => {
+            openPopupFromUrl("/static/html/static_matriz_html/popup_usabilidad.html", () => {
+                cargarColumnasDesdeLocalStorage("usabilidad-column-checklist");
+            });
+        });
+    }
+
+    // Cierre del popup
+    const cerrarBtn = document.getElementById("popup-close");
+    if (cerrarBtn) {
+        cerrarBtn.addEventListener("click", () => {
+            const popupOverlay = document.getElementById("popup-overlay");
+            if (popupOverlay) {
+                popupOverlay.classList.add("hidden");
+            }
+        });
+    }
+
+    // Cerrar al hacer clic en el fondo
+    const popupOverlay = document.getElementById("popup-overlay");
+    if (popupOverlay) {
+        popupOverlay.addEventListener("click", (e) => {
+            if (e.target === popupOverlay) {
+                popupOverlay.classList.add("hidden");
+            }
+        });
+    }
+});
+
+</script>

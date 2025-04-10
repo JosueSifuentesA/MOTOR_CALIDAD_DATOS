@@ -84,53 +84,76 @@
                     <tbody id="profile_table_body"></tbody>
                 </table>
             </section>
+
+            <button id="redirect_button" style="display: none;" onclick="redirectToOtherPage()">Ir a otra página</button>
+
         </section>
     </main>
 
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const tableCards = document.querySelectorAll(".cards_handler_card");
-        const profileContainer = document.getElementById("table_profile_container");
-        const profileTableBody = document.getElementById("profile_table_body");
-
-        tableCards.forEach(card => {
-            card.addEventListener("click", function () {
-                const tableName = this.getAttribute("data-table-name");
-
-                // Hacer una solicitud al backend
-                fetch(`http://localhost:5000/perfilar_tabla?table_name=${tableName}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            updateProfileTable(data.profile_data);
-                        } else {
-                            alert("Error al obtener los datos de la tabla.");
-                        }
-                    })
-                    .catch(error => console.error("Error en la petición:", error));
-            });
-        });
-
-        function updateProfileTable(profileData) {
-            profileTableBody.innerHTML = ""; // Limpiar tabla
-
-            profileData.forEach(row => {
-                const tr = document.createElement("tr");
-
-                ["Columna", "Tipo de Dato", "Valores Nulos (%)", "Duplicados", "Valores Únicos"].forEach(key => {
-                    const td = document.createElement("td");
-                    td.textContent = row[key];
-                    tr.appendChild(td);
+        document.addEventListener("DOMContentLoaded", function () {
+            const tableCards = document.querySelectorAll(".cards_handler_card");
+            const profileContainer = document.getElementById("table_profile_container");
+            const profileTableBody = document.getElementById("profile_table_body");
+            const redirectButton = document.getElementById("redirect_button");
+            let selectedTableName = null;
+    
+            tableCards.forEach(card => {
+                card.addEventListener("click", function () {
+                    selectedTableName = this.getAttribute("data-table-name");
+    
+                    fetch(`http://localhost:5000/perfilar_tabla?table_name=${selectedTableName}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                updateProfileTable(data.profile_data);
+                                // Mostrar el botón al seleccionar una tabla
+                                redirectButton.style.display = "block";
+    
+                                // Guardar el nombre de la tabla y los datos en localStorage
+                                localStorage.setItem("selectedTableName", selectedTableName);
+                                localStorage.setItem("profileData", JSON.stringify(data.profile_data));
+                            } else {
+                                alert("Error al obtener los datos de la tabla.");
+                            }
+                        })
+                        .catch(error => console.error("Error en la petición:", error));
                 });
-
-                profileTableBody.appendChild(tr);
             });
-
-            // Mostrar el contenedor de perfilado
-            profileContainer.style.display = "block";
-        }
-    });
+    
+            function updateProfileTable(profileData) {
+                profileTableBody.innerHTML = "";
+    
+                profileData.forEach(row => {
+                    const tr = document.createElement("tr");
+    
+                    ["Columna", "Tipo de Dato", "Valores Nulos (%)", "Duplicados", "Valores Únicos"].forEach(key => {
+                        const td = document.createElement("td");
+                        td.textContent = row[key];
+                        tr.appendChild(td);
+                    });
+    
+                    profileTableBody.appendChild(tr);
+                });
+    
+                // Mostrar el contenedor de perfilado
+                profileContainer.style.display = "block";
+            }
+    
+            // Función para redirigir al otro método de Flask
+            window.redirectToOtherPage = function() {
+                if (selectedTableName) {
+                    // Redirige a otra página con la tabla seleccionada como parámetro
+                    window.location.href = `http://localhost:5000/matriz_evaluacion?table_name=${selectedTableName}`;
+                } else {
+                    alert("No se ha seleccionado una tabla.");
+                }
+            };
+        });
     </script>
+    
+    
+    
 
 </body>
 </html>

@@ -53,6 +53,31 @@ def profile_table_data(connection, table_name):
     finally:
         cursor.close()
 
+def get_table_info(connection, table_name):
+    """Obtiene el número de filas, el número de columnas y el nombre de la tabla."""
+    try:
+        cursor = connection.cursor()
+
+        # Obtener el número de filas
+        cursor.execute(f"SELECT COUNT(*) FROM {table_name.upper()}")
+        num_rows = cursor.fetchone()[0]
+
+        # Obtener el número de columnas
+        cursor.execute(f"SELECT * FROM {table_name.upper()} WHERE 1=0")
+        num_columns = len(cursor.description)
+
+        # Devolver los resultados
+        return {
+            "nombre_tabla": table_name.upper(),
+            "numero_filas": num_rows,
+            "numero_columnas": num_columns
+        }
+
+    except Exception as e:
+        print(f"Error en la obtención de información de la tabla '{table_name}': {str(e)}")
+        return None
+    finally:
+        cursor.close()
 
 
 def list_all_tables(connection, db_type):

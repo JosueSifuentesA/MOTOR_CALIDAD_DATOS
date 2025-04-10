@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motor de Calidad</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/perfilador/perfilador.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/matriz/matriz.css') }}">
+</head>
+<body>
+    <header></header>
+    <main>
+        <div id="popup-overlay" class="popup-overlay hidden">
+            <div class="popup">
+                <button class="popup-close" id="popup-close">✖</button>
+                <div id="popup-content">
+                    <!-- Contenido dinámico para cada criterio -->
+                </div>
+            </div>
+        </div>
+        <section class="sidebar">
+            <div class="sidebar_option_perfilado">
+                <img src="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}"  alt="icono perfilado"/>
+                <label>Perfilado de datos</label>
+            </div>
+            <div class="sidebar_option_matriz">
+                <img src="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}"  alt="icono matriz"/>
+                <label>Matriz de evaluación</label>
+            </div>
+            <div class="sidebar_option_reportes">
+                <img src="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}"  alt="icono reportes"/>
+                <label>Reportes</label>
+            </div>
+            <div class="sidebar_option_exportacion">
+                <img src="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}"  alt="icono exportación"/>
+                <label>Opciones de exportación</label>
+            </div>
+        </section>
+
+        <section class="container">
+            <section class="container_dbinfo">
+                <div class="container_dbinfo_card">
+                    <div class="dbinfo_card_icon">
+                        <img src="{{ url_for('static', filename='img/perfilador/db_oracle_icon.png') }}" alt="icono_db"/>
+                    </div>
+                    <div class="db_info_card_data">
+                        <label class="container_dbinfo_card_motor">Motor: <span class="db_info_card_value">Oracle XE</span></label>
+                        <label class="container_dbinfo_card_usuario">Usuario: <span class="db_info_card_value">Some1</span></label>
+                        <label class="container_dbinfo_card_version">Versión: <span class="db_info_card_value">V12.03</span></label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="table_selector_container">
+                <h2 class="container_header">Tabla seleccionada</h2>
+                <section class="table_selector_cards_handler">
+                    <div class="cards_handler_card" data-table-name="{{ table_info['name'] }}">
+                        <div class="table_icon_handler">
+                            <img src="{{ url_for('static', filename='img/perfilador/table.png') }}" alt="table_icon"/>
+                        </div>
+                        <div class="card_info">
+                            <div>
+                                <img src="{{ url_for('static', filename='img/perfilador/profiler_square.svg') }}" alt="name_icon"/>
+                                <label>Nombre: <span>{{ table_info['nombre_tabla'] }}</span></label>
+                            </div>
+                            <div>
+                                <img src="{{ url_for('static', filename='img/perfilador/profiler_column_icon.svg') }}" alt="column_icon"/>
+                                <label>Columnas: <span>{{ table_info['numero_columnas'] }}</span></label>
+                            </div>
+                            <div>
+                                <img src="{{ url_for('static', filename='img/perfilador/profiler_row_icon.svg') }}" alt="registro_icon"/>
+                                <label>Registros: <span>{{ table_info['numero_filas'] }}</span></label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+                
+            <section>
+                <h2 class="container_header">Configurar criterios de calidad</h2>
+                <section class="table_selector_cards_handler">
+                    <div class="card_criterio card_criterio--exactitud">
+                        <div class="card_criterio_icono">
+                            <img src="{{ url_for('static', filename='img/matriz/exactitud_icon.svg') }}"/>
+                        </div>
+                        <div class="card_criterio_info">
+                            <label>Exactitud</label>
+                            <label>Peso: <span id="criterio_peso_exactitud">-</span></label>
+                        </div>
+                        <button id="configurar_exactitud">Configurar criterio</button>
+                    </div>
+                    <div class="card_criterio card_criterio--validez">
+                        <div class="card_criterio_icono">
+                            <img src="{{ url_for('static', filename='img/matriz/validez_icon.svg') }}"/>
+                        </div>
+                        <div class="card_criterio_info">
+                            <label>Validez</label>
+                            <label>Peso: <span id="criterio_peso_validez">20%</span></label>
+                        </div>
+                        <button id="configurar_validez">Configurar criterio</button>
+                    </div>
+                    <div class="card_criterio card_criterio--usabilidad">
+                        <div class="card_criterio_icono">
+                            <img src="{{ url_for('static', filename='img/matriz/usabilidad_icon.svg') }}"/>
+                        </div>
+                        <div class="card_criterio_info">
+                            <label>Usabilidad</label>
+                            <label>Peso: <span id="criterio_peso_usabilidad">20%</span></label>
+                        </div>
+                        <button id="configurar_usabilidad">Configurar criterio</button>
+                    </div>
+                    <div class="card_criterio card_criterio--interpretabilidad">
+                        <div class="card_criterio_icono">
+                            <img src="{{ url_for('static', filename='img/matriz/interpretabilidad_icon.svg') }}"/>
+                        </div>
+                        <div class="card_criterio_info">
+                            <label>Interpretabilidad</label>
+                            <label>Peso: <span id="criterio_peso_interpretabilidad">20%</span></label>
+                        </div>
+                        <button id="configurar_interpretabilidad">Configurar criterio</button>
+                    </div>
+                    <div class="card_criterio card_criterio--fiabilidad">
+                        <div class="card_criterio_icono">
+                            <img src="{{ url_for('static', filename='img/matriz/fiabilidad_icon.svg') }}"/>
+                        </div>
+                        <div class="card_criterio_info">
+                            <label>Fiabilidad</label>
+                            <label>Peso: <span id="criterio_peso_fiabilidad">20%</span></label>
+                        </div>
+                        <button id="configurar_fiabilidad">Configurar criterio</button>
+                    </div>
+                    <div class="card_criterio card_criterio--credibilidad">
+                        <div class="card_criterio_icono">
+                            <img src="{{ url_for('static', filename='img/matriz/credibilidad_icon.svg') }}"/>
+                        </div>
+                        <div class="card_criterio_info">
+                            <label>Credibilidad</label>
+                            <label>Peso: <span id="criterio_peso_credibilidad">20%</span></label>
+                        </div>
+                        <button id="configurar_credibilidad">Configurar criterio</button>
+                    </div>
+                    <div class="card_criterio card_criterio--consistencia">
+                        <div class="card_criterio_icono">
+                            <img src="{{ url_for('static', filename='img/matriz/consistencia_icon.svg') }}"/>
+                        </div>
+                        <div class="card_criterio_info">
+                            <label>Consistencia</label>
+                            <label>Peso: <span id="criterio_peso_consistencia">20%</span></label>
+                        </div>
+                        <button id="configurar_consistencia">Configurar criterio</button>
+                    </div>
+                    <div class="card_criterio card_criterio--completitud">
+                        <div class="card_criterio_icono">
+                            <img src="{{ url_for('static', filename='img/matriz/completitud_icon.svg') }}"/>
+                        </div>
+                        <div class="card_criterio_info">
+                            <label>Completitud</label>
+                            <label>Peso: <span id="criterio_peso_completitud">20%</span></label>
+                        </div>
+                        <button id="configurar_completitud">Configurar criterio</button>
+                    </div>
+                </section>
+            </section>
+
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const openPopupFromUrl = (url, callback) => {
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        const popupOverlay = document.getElementById("popup-overlay");
+                        const popupContent = document.getElementById("popup-content");
+
+                        if (popupContent && popupOverlay) {
+                            popupContent.innerHTML = html;
+                            popupOverlay.classList.remove("hidden");
+
+                            if (callback) callback();
+                        }
+
+                        // Ahora manejamos el botón Confirmar, que está en el contenido cargado
+                        const confirmarBtn = document.getElementById("btn_confirmar_usabilidad");
+                        if (confirmarBtn) {
+                            confirmarBtn.addEventListener("click", () => {
+                                console.log('Botón Confirmar clickeado');
+
+                                // Obtener las columnas seleccionadas
+                                const checkboxes = document.querySelectorAll("#usabilidad-column-checklist input[type='checkbox']:checked");
+                                const columnasSeleccionadas = [];
+                                checkboxes.forEach((checkbox) => {
+                                    columnasSeleccionadas.push(checkbox.value);
+                                });
+
+                                // Obtener el peso del criterio
+                                const pesoInput = document.getElementById("peso_criterio_usabilidad");
+                                const peso = pesoInput ? pesoInput.value.trim() : ""; // Obtener el valor del input y eliminar espacios innecesarios
+
+                                // Verificar si el peso está vacío
+                                if (peso === "") {
+                                    alert("Por favor, ingresa un peso válido.");
+                                    return; // No continuar si el peso no es válido
+                                }
+
+                                // Crear un objeto con las columnas seleccionadas y el peso
+                                const criterioUsabilidadData = {
+                                    columnas: columnasSeleccionadas,
+                                    peso: peso
+                                };
+
+                                console.log("Guardando datos en localStorage:", criterioUsabilidadData); // Para verificar
+
+                                // Guardar el objeto completo (columnas y peso) en localStorage
+                                localStorage.setItem("criterioUsabilidad", JSON.stringify(criterioUsabilidadData));
+
+                                // Cerrar el popup (solo cuando se confirma)
+                                const popupOverlay = document.getElementById("popup-overlay");
+                                if (popupOverlay) {
+                                    popupOverlay.classList.add("hidden");
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => console.error("Error cargando popup:", error));
+            };
+
+            const cargarColumnasDesdeLocalStorage = (ulId) => {
+                const profileData = JSON.parse(localStorage.getItem("profileData") || "[]");
+                const ul = document.getElementById(ulId);
+
+                if (!ul || profileData.length === 0) return;
+
+                profileData.forEach((col, index) => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `
+                        <label>
+                            <input type="checkbox" name="columna_${index}" value="${col.Columna}" data-columna="${col.Columna}">
+                            ${col.Columna}
+                        </label>`;
+                    ul.appendChild(li);
+                });
+            };
+
+            const botonUsabilidad = document.getElementById("configurar_usabilidad");
+            if (botonUsabilidad) {
+                botonUsabilidad.addEventListener("click", () => {
+                    openPopupFromUrl("/static/html/static_matriz_html/popup_usabilidad.html", () => {
+                        cargarColumnasDesdeLocalStorage("usabilidad-column-checklist");
+                    });
+                });
+            }
+
+            // Cierre del popup
+            const cerrarBtn = document.getElementById("popup-close");
+            if (cerrarBtn) {
+                cerrarBtn.addEventListener("click", () => {
+                    const popupOverlay = document.getElementById("popup-overlay");
+                    if (popupOverlay) {
+                        popupOverlay.classList.add("hidden");
+                    }
+                });
+            }
+
+            // Cerrar al hacer clic en el fondo
+            const popupOverlay = document.getElementById("popup-overlay");
+            if (popupOverlay) {
+                popupOverlay.addEventListener("click", (e) => {
+                    if (e.target === popupOverlay) {
+                        popupOverlay.classList.add("hidden");
+                    }
+                });
+            }
+        });
+    </script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const openPopupFromUrlCompletitud = (url, callback) => {
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        const popupOverlay = document.getElementById("popup-overlay");
+                        const popupContent = document.getElementById("popup-content");
+
+                        if (popupContent && popupOverlay) {
+                            popupContent.innerHTML = html;
+                            popupOverlay.classList.remove("hidden");
+
+                            if (callback) callback();
+                        }
+
+                        // Ahora manejamos el botón Confirmar, que está en el contenido cargado
+                        const confirmarBtnCompletitud = document.getElementById("btn_confirmar_completitud");
+                        if (confirmarBtnCompletitud) {
+                            confirmarBtnCompletitud.addEventListener("click", () => {
+                                console.log('Botón Confirmar clickeado para completitud');
+
+                                // Obtener las columnas seleccionadas
+                                const checkboxesCompletitud = document.querySelectorAll("#completitud-column-checklist input[type='checkbox']:checked");
+                                const columnasSeleccionadasCompletitud = [];
+                                checkboxesCompletitud.forEach((checkbox) => {
+                                    columnasSeleccionadasCompletitud.push(checkbox.value);
+                                });
+
+                                // Obtener el peso del criterio
+                                const pesoInputCompletitud = document.getElementById("peso_criterio_completitud");
+                                const pesoCompletitud = pesoInputCompletitud ? pesoInputCompletitud.value.trim() : ""; // Obtener el valor del input y eliminar espacios innecesarios
+
+                                // Verificar si el peso está vacío
+                                if (pesoCompletitud === "") {
+                                    alert("Por favor, ingresa un peso válido para completitud.");
+                                    return; // No continuar si el peso no es válido
+                                }
+
+                                // Crear un objeto con las columnas seleccionadas y el peso
+                                const criterioCompletitudData = {
+                                    columnas: columnasSeleccionadasCompletitud,
+                                    peso: pesoCompletitud
+                                };
+
+                                console.log("Guardando datos en localStorage:", criterioCompletitudData); // Para verificar
+
+                                // Guardar el objeto completo (columnas y peso) en localStorage
+                                localStorage.setItem("criterioCompletitud", JSON.stringify(criterioCompletitudData));
+
+                                // Cerrar el popup (solo cuando se confirma)
+                                const popupOverlay = document.getElementById("popup-overlay");
+                                if (popupOverlay) {
+                                    popupOverlay.classList.add("hidden");
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => console.error("Error cargando popup:", error));
+            };
+
+            const cargarColumnasDesdeLocalStorageCompletitud = (ulId) => {
+                const profileData = JSON.parse(localStorage.getItem("profileData") || "[]");
+                const ul = document.getElementById(ulId);
+
+                if (!ul || profileData.length === 0) return;
+
+                profileData.forEach((col, index) => {
+                    const li = document.createElement("li");
+                    li.innerHTML = ` 
+                        <label>
+                            <input type="checkbox" name="columna_${index}" value="${col.Columna}" data-columna="${col.Columna}">
+                            ${col.Columna}
+                        </label>`;
+                    ul.appendChild(li);
+                });
+            };
+
+            // Aquí agregamos el evento para el botón de configurar completitud
+            const botonCompletitud = document.getElementById("configurar_completitud");
+            if (botonCompletitud) {
+                botonCompletitud.addEventListener("click", () => {
+                    openPopupFromUrlCompletitud("/static/html/static_matriz_html/popup_completitud.html", () => {
+                        cargarColumnasDesdeLocalStorageCompletitud("completitud-column-checklist");
+                    });
+                });
+            }
+
+            // Cerrar el popup al hacer clic en el fondo
+            const cerrarBtn = document.getElementById("popup-close");
+            if (cerrarBtn) {
+                cerrarBtn.addEventListener("click", () => {
+                    const popupOverlay = document.getElementById("popup-overlay");
+                    if (popupOverlay) {
+                        popupOverlay.classList.add("hidden");
+                    }
+                });
+            }
+
+            const popupOverlay = document.getElementById("popup-overlay");
+            if (popupOverlay) {
+                popupOverlay.addEventListener("click", (e) => {
+                    if (e.target === popupOverlay) {
+                        popupOverlay.classList.add("hidden");
+                    }
+                });
+            }
+        });
+    </script>
+    
+    
+    
+
+</body>
+</html>
