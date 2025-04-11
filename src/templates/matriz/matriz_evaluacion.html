@@ -99,6 +99,7 @@
                         </div>
                         <button id="configurar_validez">Configurar criterio</button>
                     </div>
+                    
                     <div class="card_criterio card_criterio--usabilidad">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/usabilidad_icon.svg') }}"/>
@@ -383,6 +384,139 @@
                 });
             }
         });
+    </script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        // Función para abrir el popup desde una URL
+        const openPopupFromUrlValidez = (url, callback) => {
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    const popupOverlay = document.getElementById("popup-overlay");
+                    const popupContent = document.getElementById("popup-content");
+
+                    // Asegúrate de que el popup esté disponible
+                    if (popupContent && popupOverlay) {
+                        popupContent.innerHTML = html;
+                        popupOverlay.classList.remove("hidden"); // Mostrar el popup
+
+                        // Llamar al callback para inicializar el script del hijo después de cargar el contenido
+                        if (callback) callback();
+
+                        // Iniciar el script para cargar las columnas dinámicamente desde localStorage
+                        cargarColumnasDesdeLocalStorage();
+                    }
+                })
+                .catch(error => console.error("Error cargando popup:", error));
+        };
+
+        // Agregar el evento al botón para abrir el popup de configuración de validez
+        const configurarValidezBtn = document.getElementById("configurar_validez");
+
+        if (configurarValidezBtn) {
+            configurarValidezBtn.addEventListener("click", () => {
+                openPopupFromUrlValidez("/static/html/static_matriz_html/popup_validez.html", () => {
+                    console.log("Popup de validez abierto correctamente");
+                });
+            });
+        }
+
+        // Función para cargar las columnas desde localStorage
+        const cargarColumnasDesdeLocalStorage = () => {
+            // Obtén los datos de 'profileData' del localStorage
+            const profileData = JSON.parse(localStorage.getItem('profileData'));
+
+            // Verifica que profileData no esté vacío
+            if (profileData && Array.isArray(profileData)) {
+                const checklistContainer = document.getElementById('validez-column-checklist');
+                
+                // Vacía la lista antes de añadir los nuevos combobox
+                checklistContainer.innerHTML = '';
+        
+                // Añadir un combobox por cada columna en profileData
+                profileData.forEach(item => {
+                    const listItem = document.createElement('li');
+                    
+                    // Crear un combobox (select) para cada columna
+                    const select = document.createElement('select');
+                    select.id = `column-select-${item.Columna}`;  // ID único para cada combobox
+        
+                    // Crear las opciones del combobox
+                    const option1 = document.createElement('option');
+                    option1.value = 'texto';
+                    option1.textContent = 'Texto';
+        
+                    const option2 = document.createElement('option');
+                    option2.value = 'numero';
+                    option2.textContent = 'Número';
+        
+                    const option3 = document.createElement('option');
+                    option3.value = 'fecha';
+                    option3.textContent = 'Fecha';
+        
+                    // Añadir las opciones al combobox
+                    select.appendChild(option1);
+                    select.appendChild(option2);
+                    select.appendChild(option3);
+        
+                    // Crear una etiqueta para el combobox
+                    const label = document.createElement('label');
+                    label.setAttribute('for', select.id);
+                    label.textContent = `Seleccionar tipo para ${item.Columna}`;
+        
+                    // Añadir el combobox y la etiqueta al <li>
+                    listItem.appendChild(label);
+                    listItem.appendChild(select);
+        
+                    // Añadir el <li> a la lista
+                    checklistContainer.appendChild(listItem);
+                });
+            }
+        };
+
+        // Manejo de los eventos para confirmar los criterios de validez
+        document.getElementById("btn_confirmar_validez")?.addEventListener("click", () => {
+            console.log('Botón Confirmar clickeado para validez');
+
+            // Obtener las columnas seleccionadas con los combobox
+            const selectsValidez = document.querySelectorAll("#validez-column-checklist select");
+            const columnasSeleccionadasValidez = [];
+            selectsValidez.forEach((select) => {
+                const columna = select.id.split("-")[2];  // Obtener el nombre de la columna de la ID
+                const tipoSeleccionado = select.value;
+                columnasSeleccionadasValidez.push({ columna, tipo: tipoSeleccionado });
+            });
+
+            // Obtener el peso del criterio
+            const pesoInputValidez = document.getElementById("peso_criterio_validez");
+            const pesoValidez = pesoInputValidez ? pesoInputValidez.value.trim() : ""; // Obtener el valor del input y eliminar espacios innecesarios
+
+            // Verificar si el peso está vacío
+            if (pesoValidez === "") {
+                alert("Por favor, ingresa un peso válido para validez.");
+                return; // No continuar si el peso no es válido
+            }
+
+            // Crear un objeto con las columnas seleccionadas y el peso
+            const criterioValidezData = {
+                columnas: columnasSeleccionadasValidez,
+                peso: pesoValidez
+            };
+
+            console.log("Guardando datos en localStorage:", criterioValidezData); // Para verificar
+
+            // Guardar el objeto completo (columnas y peso) en localStorage
+            localStorage.setItem("criterioValidez", JSON.stringify(criterioValidezData));
+
+            // Cerrar el popup (solo cuando se confirma)
+            const popupOverlay = document.getElementById("popup-overlay");
+            if (popupOverlay) {
+                popupOverlay.classList.add("hidden");
+            }
+        });
+    });
+
     </script>
     
     

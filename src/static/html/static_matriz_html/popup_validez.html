@@ -1,0 +1,79 @@
+<div class="popup_content">
+    <h2>Configurar Criterio de validez</h2>
+
+    <!-- Input para el peso del criterio -->
+    <label for="peso_criterio_validez">Seleccionar peso del criterio</label>
+    <div class="input_handler">
+        <input id="peso_criterio_validez" placeholder="20" />
+        <div class="unit_container"><span class="input_unit">%</span></div>
+    </div>
+
+    <!-- Sección para las columnas dinámicas cargadas desde localStorage -->
+    <label for="validez-column-checklist">Seleccionar columnas que aplicarán este criterio</label>
+    <ul id="validez-column-checklist">
+        <!-- Aquí se insertarán dinámicamente los combobox -->
+    </ul>
+
+    <!-- Botón de confirmación -->
+    <button id="btn_confirmar_validez">Confirmar</button>
+    <button id="popup-close">Cerrar</button>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Agregar evento al botón Confirmar
+        document.getElementById("btn_confirmar_validez")?.addEventListener("click", () => {
+            console.log('Botón Confirmar clickeado para validez');
+
+            // Obtener las columnas seleccionadas con los combobox
+            const selectsValidez = document.querySelectorAll("#validez-column-checklist select");
+            const columnasSeleccionadasValidez = [];
+
+            selectsValidez.forEach((select) => {
+                // Obtener el nombre de la columna a partir de la ID del select
+                const columna = select.id.split("-")[2];  // El nombre de la columna se obtiene de la ID
+
+                // Obtener el tipo seleccionado en el combobox
+                const tipoSeleccionado = select.value;
+
+                // Guardar el valor en el array
+                columnasSeleccionadasValidez.push({ columna, tipo: tipoSeleccionado });
+            });
+
+            // Verifica si se han seleccionado valores
+            if (columnasSeleccionadasValidez.length === 0) {
+                alert("Por favor, selecciona al menos un tipo de columna.");
+                return; // Detener si no se seleccionó ninguna columna
+            }
+
+            // Obtener el peso del criterio
+            const pesoInputValidez = document.getElementById("peso_criterio_validez");
+            const pesoValidez = pesoInputValidez ? pesoInputValidez.value.trim() : ""; // Obtener el valor del input y eliminar espacios innecesarios
+
+            // Verificar si el peso está vacío
+            if (pesoValidez === "") {
+                alert("Por favor, ingresa un peso válido para validez.");
+                return; // No continuar si el peso no es válido
+            }
+
+            // Crear un objeto con las columnas seleccionadas y el peso
+            const criterioValidezData = {
+                columnas: columnasSeleccionadasValidez,
+                peso: pesoValidez
+            };
+
+            console.log("Guardando datos en localStorage:", criterioValidezData); // Para verificar
+
+            // Guardar el objeto completo (columnas y peso) en localStorage
+            localStorage.setItem("criterioValidez", JSON.stringify(criterioValidezData));
+
+            // Cerrar el popup (solo cuando se confirma)
+            const popupOverlay = document.getElementById("popup-overlay");
+            if (popupOverlay) {
+                popupOverlay.classList.add("hidden");
+            }
+        });
+    });
+</script>
+
+
