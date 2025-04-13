@@ -110,6 +110,7 @@
                         </div>
                         <button id="configurar_usabilidad">Configurar criterio</button>
                     </div>
+                    <!--
                     <div class="card_criterio card_criterio--interpretabilidad">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/interpretabilidad_icon.svg') }}"/>
@@ -120,6 +121,8 @@
                         </div>
                         <button id="configurar_interpretabilidad">Configurar criterio</button>
                     </div>
+                    -->
+                    <!--
                     <div class="card_criterio card_criterio--fiabilidad">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/fiabilidad_icon.svg') }}"/>
@@ -130,6 +133,8 @@
                         </div>
                         <button id="configurar_fiabilidad">Configurar criterio</button>
                     </div>
+                    -->
+                    <!--
                     <div class="card_criterio card_criterio--credibilidad">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/credibilidad_icon.svg') }}"/>
@@ -140,6 +145,8 @@
                         </div>
                         <button id="configurar_credibilidad">Configurar criterio</button>
                     </div>
+                    -->
+                    <!--
                     <div class="card_criterio card_criterio--consistencia">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/consistencia_icon.svg') }}"/>
@@ -150,6 +157,7 @@
                         </div>
                         <button id="configurar_consistencia">Configurar criterio</button>
                     </div>
+                    -->
                     <div class="card_criterio card_criterio--completitud">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/completitud_icon.svg') }}"/>
@@ -160,364 +168,17 @@
                         </div>
                         <button id="configurar_completitud">Configurar criterio</button>
                     </div>
+                    
                 </section>
             </section>
 
         </section>
     </main>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const openPopupFromUrl = (url, callback) => {
-                fetch(url)
-                    .then(response => response.text())
-                    .then(html => {
-                        const popupOverlay = document.getElementById("popup-overlay");
-                        const popupContent = document.getElementById("popup-content");
-
-                        if (popupContent && popupOverlay) {
-                            popupContent.innerHTML = html;
-                            popupOverlay.classList.remove("hidden");
-
-                            if (callback) callback();
-                        }
-
-                        // Ahora manejamos el botón Confirmar, que está en el contenido cargado
-                        const confirmarBtn = document.getElementById("btn_confirmar_usabilidad");
-                        if (confirmarBtn) {
-                            confirmarBtn.addEventListener("click", () => {
-                                console.log('Botón Confirmar clickeado');
-
-                                // Obtener las columnas seleccionadas
-                                const checkboxes = document.querySelectorAll("#usabilidad-column-checklist input[type='checkbox']:checked");
-                                const columnasSeleccionadas = [];
-                                checkboxes.forEach((checkbox) => {
-                                    columnasSeleccionadas.push(checkbox.value);
-                                });
-
-                                // Obtener el peso del criterio
-                                const pesoInput = document.getElementById("peso_criterio_usabilidad");
-                                const peso = pesoInput ? pesoInput.value.trim() : ""; // Obtener el valor del input y eliminar espacios innecesarios
-
-                                // Verificar si el peso está vacío
-                                if (peso === "") {
-                                    alert("Por favor, ingresa un peso válido.");
-                                    return; // No continuar si el peso no es válido
-                                }
-
-                                // Crear un objeto con las columnas seleccionadas y el peso
-                                const criterioUsabilidadData = {
-                                    columnas: columnasSeleccionadas,
-                                    peso: peso
-                                };
-
-                                console.log("Guardando datos en localStorage:", criterioUsabilidadData); // Para verificar
-
-                                // Guardar el objeto completo (columnas y peso) en localStorage
-                                localStorage.setItem("criterioUsabilidad", JSON.stringify(criterioUsabilidadData));
-
-                                // Cerrar el popup (solo cuando se confirma)
-                                const popupOverlay = document.getElementById("popup-overlay");
-                                if (popupOverlay) {
-                                    popupOverlay.classList.add("hidden");
-                                }
-                            });
-                        }
-                    })
-                    .catch(error => console.error("Error cargando popup:", error));
-            };
-
-            const cargarColumnasDesdeLocalStorage = (ulId) => {
-                const profileData = JSON.parse(localStorage.getItem("profileData") || "[]");
-                const ul = document.getElementById(ulId);
-
-                if (!ul || profileData.length === 0) return;
-
-                profileData.forEach((col, index) => {
-                    const li = document.createElement("li");
-                    li.innerHTML = `
-                        <label>
-                            <input type="checkbox" name="columna_${index}" value="${col.Columna}" data-columna="${col.Columna}">
-                            ${col.Columna}
-                        </label>`;
-                    ul.appendChild(li);
-                });
-            };
-
-            const botonUsabilidad = document.getElementById("configurar_usabilidad");
-            if (botonUsabilidad) {
-                botonUsabilidad.addEventListener("click", () => {
-                    openPopupFromUrl("/static/html/static_matriz_html/popup_usabilidad.html", () => {
-                        cargarColumnasDesdeLocalStorage("usabilidad-column-checklist");
-                    });
-                });
-            }
-
-            // Cierre del popup
-            const cerrarBtn = document.getElementById("popup-close");
-            if (cerrarBtn) {
-                cerrarBtn.addEventListener("click", () => {
-                    const popupOverlay = document.getElementById("popup-overlay");
-                    if (popupOverlay) {
-                        popupOverlay.classList.add("hidden");
-                    }
-                });
-            }
-
-            // Cerrar al hacer clic en el fondo
-            const popupOverlay = document.getElementById("popup-overlay");
-            if (popupOverlay) {
-                popupOverlay.addEventListener("click", (e) => {
-                    if (e.target === popupOverlay) {
-                        popupOverlay.classList.add("hidden");
-                    }
-                });
-            }
-        });
-    </script>
-    
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const openPopupFromUrlCompletitud = (url, callback) => {
-                fetch(url)
-                    .then(response => response.text())
-                    .then(html => {
-                        const popupOverlay = document.getElementById("popup-overlay");
-                        const popupContent = document.getElementById("popup-content");
-
-                        if (popupContent && popupOverlay) {
-                            popupContent.innerHTML = html;
-                            popupOverlay.classList.remove("hidden");
-
-                            if (callback) callback();
-                        }
-
-                        // Ahora manejamos el botón Confirmar, que está en el contenido cargado
-                        const confirmarBtnCompletitud = document.getElementById("btn_confirmar_completitud");
-                        if (confirmarBtnCompletitud) {
-                            confirmarBtnCompletitud.addEventListener("click", () => {
-                                console.log('Botón Confirmar clickeado para completitud');
-
-                                // Obtener las columnas seleccionadas
-                                const checkboxesCompletitud = document.querySelectorAll("#completitud-column-checklist input[type='checkbox']:checked");
-                                const columnasSeleccionadasCompletitud = [];
-                                checkboxesCompletitud.forEach((checkbox) => {
-                                    columnasSeleccionadasCompletitud.push(checkbox.value);
-                                });
-
-                                // Obtener el peso del criterio
-                                const pesoInputCompletitud = document.getElementById("peso_criterio_completitud");
-                                const pesoCompletitud = pesoInputCompletitud ? pesoInputCompletitud.value.trim() : ""; // Obtener el valor del input y eliminar espacios innecesarios
-
-                                // Verificar si el peso está vacío
-                                if (pesoCompletitud === "") {
-                                    alert("Por favor, ingresa un peso válido para completitud.");
-                                    return; // No continuar si el peso no es válido
-                                }
-
-                                // Crear un objeto con las columnas seleccionadas y el peso
-                                const criterioCompletitudData = {
-                                    columnas: columnasSeleccionadasCompletitud,
-                                    peso: pesoCompletitud
-                                };
-
-                                console.log("Guardando datos en localStorage:", criterioCompletitudData); // Para verificar
-
-                                // Guardar el objeto completo (columnas y peso) en localStorage
-                                localStorage.setItem("criterioCompletitud", JSON.stringify(criterioCompletitudData));
-
-                                // Cerrar el popup (solo cuando se confirma)
-                                const popupOverlay = document.getElementById("popup-overlay");
-                                if (popupOverlay) {
-                                    popupOverlay.classList.add("hidden");
-                                }
-                            });
-                        }
-                    })
-                    .catch(error => console.error("Error cargando popup:", error));
-            };
-
-            const cargarColumnasDesdeLocalStorageCompletitud = (ulId) => {
-                const profileData = JSON.parse(localStorage.getItem("profileData") || "[]");
-                const ul = document.getElementById(ulId);
-
-                if (!ul || profileData.length === 0) return;
-
-                profileData.forEach((col, index) => {
-                    const li = document.createElement("li");
-                    li.innerHTML = ` 
-                        <label>
-                            <input type="checkbox" name="columna_${index}" value="${col.Columna}" data-columna="${col.Columna}">
-                            ${col.Columna}
-                        </label>`;
-                    ul.appendChild(li);
-                });
-            };
-
-            // Aquí agregamos el evento para el botón de configurar completitud
-            const botonCompletitud = document.getElementById("configurar_completitud");
-            if (botonCompletitud) {
-                botonCompletitud.addEventListener("click", () => {
-                    openPopupFromUrlCompletitud("/static/html/static_matriz_html/popup_completitud.html", () => {
-                        cargarColumnasDesdeLocalStorageCompletitud("completitud-column-checklist");
-                    });
-                });
-            }
-
-            // Cerrar el popup al hacer clic en el fondo
-            const cerrarBtn = document.getElementById("popup-close");
-            if (cerrarBtn) {
-                cerrarBtn.addEventListener("click", () => {
-                    const popupOverlay = document.getElementById("popup-overlay");
-                    if (popupOverlay) {
-                        popupOverlay.classList.add("hidden");
-                    }
-                });
-            }
-
-            const popupOverlay = document.getElementById("popup-overlay");
-            if (popupOverlay) {
-                popupOverlay.addEventListener("click", (e) => {
-                    if (e.target === popupOverlay) {
-                        popupOverlay.classList.add("hidden");
-                    }
-                });
-            }
-        });
-    </script>
-    
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-        // Función para abrir el popup desde una URL
-        const openPopupFromUrlValidez = (url, callback) => {
-            fetch(url)
-                .then(response => response.text())
-                .then(html => {
-                    const popupOverlay = document.getElementById("popup-overlay");
-                    const popupContent = document.getElementById("popup-content");
-
-                    // Asegúrate de que el popup esté disponible
-                    if (popupContent && popupOverlay) {
-                        popupContent.innerHTML = html;
-                        popupOverlay.classList.remove("hidden"); // Mostrar el popup
-
-                        // Llamar al callback para inicializar el script del hijo después de cargar el contenido
-                        if (callback) callback();
-
-                        // Iniciar el script para cargar las columnas dinámicamente desde localStorage
-                        cargarColumnasDesdeLocalStorage();
-                    }
-                })
-                .catch(error => console.error("Error cargando popup:", error));
-        };
-
-        // Agregar el evento al botón para abrir el popup de configuración de validez
-        const configurarValidezBtn = document.getElementById("configurar_validez");
-
-        if (configurarValidezBtn) {
-            configurarValidezBtn.addEventListener("click", () => {
-                openPopupFromUrlValidez("/static/html/static_matriz_html/popup_validez.html", () => {
-                    console.log("Popup de validez abierto correctamente");
-                });
-            });
-        }
-
-        // Función para cargar las columnas desde localStorage
-        const cargarColumnasDesdeLocalStorage = () => {
-            // Obtén los datos de 'profileData' del localStorage
-            const profileData = JSON.parse(localStorage.getItem('profileData'));
-
-            // Verifica que profileData no esté vacío
-            if (profileData && Array.isArray(profileData)) {
-                const checklistContainer = document.getElementById('validez-column-checklist');
-                
-                // Vacía la lista antes de añadir los nuevos combobox
-                checklistContainer.innerHTML = '';
-        
-                // Añadir un combobox por cada columna en profileData
-                profileData.forEach(item => {
-                    const listItem = document.createElement('li');
-                    
-                    // Crear un combobox (select) para cada columna
-                    const select = document.createElement('select');
-                    select.id = `column-select-${item.Columna}`;  // ID único para cada combobox
-        
-                    // Crear las opciones del combobox
-                    const option1 = document.createElement('option');
-                    option1.value = 'texto';
-                    option1.textContent = 'Texto';
-        
-                    const option2 = document.createElement('option');
-                    option2.value = 'numero';
-                    option2.textContent = 'Número';
-        
-                    const option3 = document.createElement('option');
-                    option3.value = 'fecha';
-                    option3.textContent = 'Fecha';
-        
-                    // Añadir las opciones al combobox
-                    select.appendChild(option1);
-                    select.appendChild(option2);
-                    select.appendChild(option3);
-        
-                    // Crear una etiqueta para el combobox
-                    const label = document.createElement('label');
-                    label.setAttribute('for', select.id);
-                    label.textContent = `Seleccionar tipo para ${item.Columna}`;
-        
-                    // Añadir el combobox y la etiqueta al <li>
-                    listItem.appendChild(label);
-                    listItem.appendChild(select);
-        
-                    // Añadir el <li> a la lista
-                    checklistContainer.appendChild(listItem);
-                });
-            }
-        };
-
-        // Manejo de los eventos para confirmar los criterios de validez
-        document.getElementById("btn_confirmar_validez")?.addEventListener("click", () => {
-            console.log('Botón Confirmar clickeado para validez');
-
-            // Obtener las columnas seleccionadas con los combobox
-            const selectsValidez = document.querySelectorAll("#validez-column-checklist select");
-            const columnasSeleccionadasValidez = [];
-            selectsValidez.forEach((select) => {
-                const columna = select.id.split("-")[2];  // Obtener el nombre de la columna de la ID
-                const tipoSeleccionado = select.value;
-                columnasSeleccionadasValidez.push({ columna, tipo: tipoSeleccionado });
-            });
-
-            // Obtener el peso del criterio
-            const pesoInputValidez = document.getElementById("peso_criterio_validez");
-            const pesoValidez = pesoInputValidez ? pesoInputValidez.value.trim() : ""; // Obtener el valor del input y eliminar espacios innecesarios
-
-            // Verificar si el peso está vacío
-            if (pesoValidez === "") {
-                alert("Por favor, ingresa un peso válido para validez.");
-                return; // No continuar si el peso no es válido
-            }
-
-            // Crear un objeto con las columnas seleccionadas y el peso
-            const criterioValidezData = {
-                columnas: columnasSeleccionadasValidez,
-                peso: pesoValidez
-            };
-
-            console.log("Guardando datos en localStorage:", criterioValidezData); // Para verificar
-
-            // Guardar el objeto completo (columnas y peso) en localStorage
-            localStorage.setItem("criterioValidez", JSON.stringify(criterioValidezData));
-
-            // Cerrar el popup (solo cuando se confirma)
-            const popupOverlay = document.getElementById("popup-overlay");
-            if (popupOverlay) {
-                popupOverlay.classList.add("hidden");
-            }
-        });
-    });
-
-    </script>
+    <script src="{{url_for('static',filename='js/matriz/popup_usabilidad.js')}}"></script>
+    <script src="{{url_for('static',filename='js/matriz/popup_completitud.js')}}"></script>
+    <script src="{{url_for('static',filename='js/matriz/popup_validez.js')}}"></script>
+    <script src="{{url_for('static',filename='js/matriz/popup_exactitud.js')}}"></script>
     
     
     

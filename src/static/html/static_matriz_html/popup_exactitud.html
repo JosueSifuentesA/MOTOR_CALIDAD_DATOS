@@ -1,0 +1,33 @@
+<h2>Configuración de criterio de exactitud</h2>
+<span>Evalúa fechas dentro de un rango dado y valores numéricos detectando outliers según su distribución típica</span>
+<label>Seleccionar peso del criterio</label>
+<div class="input_handler">
+    <input id="peso_criterio_exactitud" placeholder="20"/>
+    <div class="unit_container"><span class="input_unit">%</span></div>
+</div>
+<label>Seleccionar columnas que aplicarán este criterio</label>
+<ul class="checklist" id="exactitud-column-checklist"></ul>
+
+<div>
+    <h3>Acciones a ejecutar</h3>
+    <span>Puedes seleccionar si deseas poner en cuarentena los valores atipicos de la evaluación o puedes eliminarlos.</span>
+</div>
+
+<div class="options_handler">
+    <div class="delete_bad_data">
+        <div class="delete_bad_data_iconhandler">
+            <img alt="delete_icon"/>
+        </div>
+        <label>Delete outliders</label>
+    </div>
+    
+    <div class="quarantine_bad_data">
+        <div class="quarantine_bad_data_iconhandler">
+            <img alt="quarantine_icon"/>
+        </div>
+        <label>Quarantine outliders</label>
+    </div>
+</div>
+
+
+<button id="btn_confirmar_exactitud">Confirmar</button>
