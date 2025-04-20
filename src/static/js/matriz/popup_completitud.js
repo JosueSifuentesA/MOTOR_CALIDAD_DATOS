@@ -38,6 +38,12 @@ document.addEventListener("DOMContentLoaded", () => {
                             peso: peso
                         };
 
+                        const pesoSpan = document.getElementById("criterio_peso_completitud");
+                        if (pesoSpan) {
+                            pesoSpan.textContent = peso + "%";
+                        }
+
+
                         console.log("Guardando datos en localStorage:", criterioData);
                         localStorage.setItem("criterioCompletitud", JSON.stringify(criterioData));
 

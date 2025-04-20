@@ -103,6 +103,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     peso: pesoValidez
                 };
 
+                const pesoSpan = document.getElementById("criterio_peso_validez");
+                if (pesoSpan) {
+                    pesoSpan.textContent = pesoValidez + "%";
+                }
+
                 console.log("Guardando datos en localStorage:", criterioValidezData);
                 localStorage.setItem("criterioValidez", JSON.stringify(criterioValidezData));
 

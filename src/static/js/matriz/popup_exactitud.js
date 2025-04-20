@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
                 const pesoSpan = document.getElementById("criterio_peso_exactitud");
                 if (pesoSpan) {
-                    pesoSpan.textContent = peso;
+                    pesoSpan.textContent = peso + "%";
                 }
     
                 const popupOverlay = document.getElementById("popup-overlay");
