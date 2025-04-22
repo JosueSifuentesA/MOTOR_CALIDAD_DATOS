@@ -4,14 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Motor de Calidad</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/root/root.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/perfilador/perfilador.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/matriz/matriz.css') }}">
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}">
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}">
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}">
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}">
+</head>
 </head>
 <body>
-    <header></header>
+    <header>
+        <h1>Qualizer</h1>
+    </header>
     <main>
         <div id="popup-overlay" class="popup-overlay hidden">
-            <div class="popup">
+            <div class="scale-up-center popup">
                 <button class="popup-close" id="popup-close">✖</button>
                 <div id="popup-content">
                     <!-- Contenido dinámico para cada criterio -->
@@ -19,22 +27,49 @@
             </div>
         </div>
         <section class="sidebar">
-            <div class="sidebar_option_perfilado">
-                <img src="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}"  alt="icono perfilado"/>
+            <div class="sidebar_option sidebar_option_perfilado">
+                <div class="sidebar_option_iconhandler">
+                    <img src="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}"  alt="icono perfilado"/>
+                </div>
                 <label>Perfilado de datos</label>
             </div>
-            <div class="sidebar_option_matriz">
-                <img src="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}"  alt="icono matriz"/>
+
+            <div class="sidebar_separation_line">
+                <div class="line"></div>
+                <div class="stuff"></div>
+            </div>
+
+            <div class="sidebar_option sidebar_option_matriz">
+                <div class="sidebar_option_iconhandler">
+                    <img src="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}"  alt="icono matriz"/>
+                </div>
                 <label>Matriz de evaluación</label>
             </div>
-            <div class="sidebar_option_reportes">
-                <img src="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}"  alt="icono reportes"/>
+
+            <div class="sidebar_separation_line">
+                <div class="line"></div>
+                <div class="stuff"></div>
+            </div>
+
+            <div class="sidebar_option sidebar_option_reportes">
+                <div class="sidebar_option_iconhandler">
+                    <img src="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}"  alt="icono reportes"/>
+                </div>
                 <label>Reportes</label>
             </div>
-            <div class="sidebar_option_exportacion">
-                <img src="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}"  alt="icono exportación"/>
+
+            <div class="sidebar_separation_line">
+                <div class="line"></div>
+                <div class="stuff"></div>
+            </div>
+
+            <div class="sidebar_option sidebar_option_exportacion">
+                <div class="sidebar_option_iconhandler">
+                    <img src="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}"  alt="icono exportación"/>
+                </div>
                 <label>Opciones de exportación</label>
             </div>
+
         </section>
 
         <section class="container">
@@ -56,7 +91,7 @@
                 <section class="table_selector_cards_handler">
                     <div class="cards_handler_card" data-table-name="{{ table_info['name'] }}">
                         <div class="table_icon_handler">
-                            <img src="{{ url_for('static', filename='img/perfilador/table.png') }}" alt="table_icon"/>
+                            <img src="{{ url_for('static', filename='img/perfilador/table_icon.svg') }}" alt="table_icon"/>
                         </div>
                         <div class="card_info">
                             <div>
@@ -79,7 +114,7 @@
             <section>
                 <h2 class="container_header">Configurar criterios de calidad</h2>
                 <section class="table_selector_cards_handler">
-                    <div class="card_criterio card_criterio--exactitud">
+                    <div class="scale-up-center card_criterio card_criterio--exactitud">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/exactitud_icon.svg') }}"/>
                         </div>
@@ -89,7 +124,7 @@
                         </div>
                         <button id="configurar_exactitud">Configurar criterio</button>
                     </div>
-                    <div class="card_criterio card_criterio--validez">
+                    <div class="scale-up-center card_criterio card_criterio--validez">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/validez_icon.svg') }}"/>
                         </div>
@@ -100,7 +135,7 @@
                         <button id="configurar_validez">Configurar criterio</button>
                     </div>
                     
-                    <div class="card_criterio card_criterio--usabilidad">
+                    <div class="scale-up-center card_criterio card_criterio--usabilidad">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/usabilidad_icon.svg') }}"/>
                         </div>
@@ -111,7 +146,7 @@
                         <button id="configurar_usabilidad">Configurar criterio</button>
                     </div>
                     
-                    <div class="card_criterio card_criterio--interpretabilidad">
+                    <div class="scale-up-center card_criterio card_criterio--interpretabilidad">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/interpretabilidad_icon.svg') }}"/>
                         </div>
@@ -123,7 +158,7 @@
                     </div>
                     
                     
-                    <div class="card_criterio card_criterio--fiabilidad">
+                    <div class="scale-up-center card_criterio card_criterio--fiabilidad">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/fiabilidad_icon.svg') }}"/>
                         </div>
@@ -135,7 +170,7 @@
                     </div>
                     
                     
-                    <div class="card_criterio card_criterio--credibilidad">
+                    <div class="scale-up-center card_criterio card_criterio--credibilidad">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/credibilidad_icon.svg') }}"/>
                         </div>
@@ -148,7 +183,7 @@
                     
                     
                     
-                    <div class="card_criterio card_criterio--consistencia">
+                    <div class="scale-up-center card_criterio card_criterio--consistencia">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/consistencia_icon.svg') }}"/>
                         </div>
@@ -160,7 +195,7 @@
                     </div>
                     
                     
-                    <div class="card_criterio card_criterio--completitud">
+                    <div class="scale-up-center card_criterio card_criterio--completitud">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/completitud_icon.svg') }}"/>
                         </div>
@@ -181,6 +216,8 @@
     <script src="{{url_for('static',filename='js/matriz/popup_completitud.js')}}"></script>
     <script src="{{url_for('static',filename='js/matriz/popup_validez.js')}}"></script>
     <script src="{{url_for('static',filename='js/matriz/popup_exactitud.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/step_module.js') }}"></script>
+
     
     
     

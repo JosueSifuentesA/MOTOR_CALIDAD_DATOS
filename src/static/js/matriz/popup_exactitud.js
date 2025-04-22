@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     listItem.appendChild(dateContainer);
                 } else if (item["Tipo de Dato"] === "float64") {
                     const columnaNombre = document.createElement('p');
-                    columnaNombre.textContent = `Columna: ${item.Columna}`;
+                    columnaNombre.textContent = `La columna ${item.Columna} es de tipo numerica , la busqueda de outliers es obligatoria`;
                     listItem.appendChild(columnaNombre);
                 }
     

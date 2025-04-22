@@ -16,42 +16,10 @@ main{
     display: flex;
     height: 100%;
 }
-.sidebar{
-    width: 25%;
-    background-color: var(--background_sidebar_color);
-    display: flex;
-    flex-flow: column;
-    gap: 10px;
-    padding: 10px;
-    max-width: 180px;
-
-}
 
 .container_header{
     color:var(--font_color);
 }
-
-.sidebar_option_selected{
-    background-color: var(--background_sidebar_option_selected)
-}
-
-.sidebar div{
-    width: 100%;
-    height: max-content;
-    background-color: var(--background_sidebar_option);
-    border-radius: 5px;
-    padding: 5px;
-    color: var(--sidebar_font_color);
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.sidebar div img{
-    width: 24px;
-}
-
 
 .container{
     padding: 10px;
@@ -60,6 +28,7 @@ main{
     box-sizing: border-box;
     flex: 1;
     overflow-y: auto;
+    scrollbar-width: none;
 }
 
 .profile_table {
@@ -174,6 +143,12 @@ main{
     border-radius: 5px;
 }
 
+#redirect_button:hover{
+    cursor: pointer;
+    background-color: transparent;
+    border: 1.5px solid var(--background_sidebar_option_selected);
+}
+
 .card_info{
     display: flex;
     flex-flow: column;
@@ -197,15 +172,6 @@ main{
     text-wrap: nowrap;
 }
 
-/*.card_info div span{
-    font-weight: 400;
-    max-width: 190px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    text-wrap: nowrap;
-
-}
-*/
 .card_info_span{
     font-weight: 400;
 }
@@ -227,13 +193,12 @@ main{
 
 .table_icon_handler img{
     width: 100%;
-    filter: invert(52%) sepia(90%) saturate(1754%) hue-rotate(193deg) brightness(98%) contrast(95%);;
+    filter: invert(52%) sepia(90%) saturate(1754%) hue-rotate(193deg) brightness(98%) contrast(95%);
 }
 
 .dbinfo_card_icon img{
     width: 57px;
 }
-
 
 
 /* ----------------------------------------------

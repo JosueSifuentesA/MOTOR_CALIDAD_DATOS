@@ -6,27 +6,60 @@
     <title>Motor de Calidad</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/root/root.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/perfilador/perfilador.css') }}">
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}">
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}">
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}">
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}">
 </head>
 <body>
-    <header></header>
+    <header>
+        <h1>Qualizer</h1>
+    </header>
     <main>
         <section class="sidebar">
-            <div class="sidebar_option_perfilado">
-                <img src="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}"  alt="icono perfilado"/>
+            <div class="sidebar_option sidebar_option_perfilado">
+                <div class="sidebar_option_iconhandler">
+                    <img loading="eager" src="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}"  alt="icono perfilado"/>
+                </div>
                 <label>Perfilado de datos</label>
             </div>
-            <div class="sidebar_option_matriz">
-                <img src="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}"  alt="icono matriz"/>
+
+            <div class="sidebar_separation_line">
+                <div class="line"></div>
+                <div class="stuff"></div>
+            </div>
+
+            <div class="sidebar_option sidebar_option_matriz">
+                <div class="sidebar_option_iconhandler">
+                    <img loading="eager" src="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}"  alt="icono matriz"/>
+                </div>
                 <label>Matriz de evaluación</label>
             </div>
-            <div class="sidebar_option_reportes">
-                <img src="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}"  alt="icono reportes"/>
+
+            <div class="sidebar_separation_line">
+                <div class="line"></div>
+                <div class="stuff"></div>
+            </div>
+
+            <div class="sidebar_option sidebar_option_reportes">
+                <div class="sidebar_option_iconhandler">
+                    <img loading="eager" src="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}"  alt="icono reportes"/>
+                </div>
                 <label>Reportes</label>
             </div>
-            <div class="sidebar_option_exportacion">
-                <img src="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}"  alt="icono exportación"/>
+
+            <div class="sidebar_separation_line">
+                <div class="line"></div>
+                <div class="stuff"></div>
+            </div>
+
+            <div class="sidebar_option sidebar_option_exportacion">
+                <div class="sidebar_option_iconhandler">
+                    <img loading="eager" src="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}"  alt="icono exportación"/>
+                </div>
                 <label>Opciones de exportación</label>
             </div>
+
         </section>
 
         <section class="container">
@@ -91,6 +124,9 @@
 
         </section>
     </main>
+
+    <script src="{{ url_for('static', filename='js/step_module.js') }}"></script>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {

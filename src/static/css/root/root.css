@@ -1,9 +1,123 @@
+:root{
+    --background_sidebar_color : #252527;
+    --background_sidebar_option : white;
+    --background_sidebar_option_selected : #4F95F2;
+    --background_color : #1D1C1C;
+    --font_color : #D9D9D9
+}
+
+header{
+    background-color: var(--background_sidebar_color);
+    margin: 0px;
+    display: flex;
+}
+
+header h1{
+  color: white;
+  padding: 0px 20px;
+  font-size: 40px;
+}
+
 body{
     font-family: 'Roboto', sans-serif;
 }
 h2{
     font-family: 'Poppins', sans-serif;
 }
+
+.sidebar_option_selected{
+    background-color: var(--background_sidebar_option_selected)
+}
+
+
+.sidebar div img{
+    width: 24px;
+}
+
+.sidebar{
+    width: 25%;
+    background-color: var(--background_sidebar_color);
+    display: flex;
+    flex-flow: column;
+    gap: 10px;
+    padding: 10px;
+    max-width: 180px;
+    color: var(--font_color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+
+}
+
+.sidebar_option{
+    display: flex;
+    gap: 15px;
+    padding: 10px;
+    width: 100%;
+    background-color: transparent;
+    box-sizing: border-box;
+    align-items: center;
+}
+
+.sidebar_option_iconhandler{
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 100%;
+    border: 2px solid var(--background_sidebar_option);
+    min-width: 24px;
+    min-height: 24px;
+
+}
+
+.sidebar_option_iconhandler img{
+    filter: invert(96%) sepia(0%) saturate(0%) hue-rotate(200deg) brightness(93%) contrast(89%);
+}
+
+
+.sidebar_separation_line{
+    display: flex;
+    padding: 0px 35px;
+}
+
+.line{
+    height: 50px;
+    background-color: white;
+    width: 1px;
+}
+
+.stuff{
+    width: 100%;
+}
+
+.step--completo{
+  color: var(--background_sidebar_option_selected);
+}
+
+.step--completo .sidebar_option_iconhandler {
+  border: 2.5px solid var(--background_sidebar_option_selected);
+  background-color: var(--background_sidebar_option_selected);
+}
+.step--actual .sidebar_option_iconhandler{
+  border: 2.5px solid var(--background_sidebar_option_selected);
+}
+
+/*
+.step--pendiente {
+  background-color: #F8D7DA;
+  #border-left: 5px solid #dc3545;
+}
+*/
+
+.line--completo {
+  background-color: var(--background_sidebar_option_selected);
+}
+.line--pendiente {
+  background-color: white;
+}
+
+
 @font-face {
     font-family: 'Poppins';
     src: url('fonts/Poppins-Black.ttf') format('truetype');
