@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Función para abrir el popup desde una URL
     const openPopupFromUrlValidez = (url, callback) => {
         fetch(url)
             .then(response => response.text())
@@ -9,17 +8,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (popupContent && popupOverlay) {
                     popupContent.innerHTML = html;
-                    popupOverlay.classList.remove("hidden"); // Mostrar el popup
+                    popupOverlay.classList.remove("hidden");
 
-                    if (callback) callback(); // Inicializar el script del hijo
-
-                    cargarColumnasDesdeLocalStorage(); // Cargar columnas dinámicamente
+                    if (callback) callback();
+                    cargarColumnasDesdeLocalStorage();
                 }
             })
             .catch(error => console.error("Error cargando popup:", error));
     };
 
-    // Evento al botón para abrir el popup de configuración de validez
     const configurarValidezBtn = document.getElementById("configurar_validez");
     if (configurarValidezBtn) {
         configurarValidezBtn.addEventListener("click", () => {
@@ -30,12 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Función para cargar las columnas desde localStorage
     const cargarColumnasDesdeLocalStorage = () => {
         const profileData = JSON.parse(localStorage.getItem('profileData'));
+        const criterioGuardado = JSON.parse(localStorage.getItem("criterioValidez"));
 
-        if (profileData && Array.isArray(profileData)) {
-            const checklistContainer = document.getElementById('validez-column-checklist');
+        const checklistContainer = document.getElementById('validez-column-checklist');
+        if (checklistContainer && profileData?.length) {
             checklistContainer.innerHTML = '';
 
             profileData.forEach(item => {
@@ -57,6 +54,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     select.appendChild(option);
                 });
 
+                const columnaGuardada = criterioGuardado?.columnas?.find(c => c.columna === item.Columna);
+                if (columnaGuardada) {
+                    select.value = columnaGuardada.tipo;
+                }
+
                 const label = document.createElement('label');
                 label.setAttribute('for', select.id);
                 label.textContent = `Seleccionar tipo para ${item.Columna}`;
@@ -66,9 +68,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 checklistContainer.appendChild(listItem);
             });
         }
+
+        const pesoInput = document.getElementById("peso_criterio_validez");
+        if (pesoInput && criterioGuardado?.peso) {
+            pesoInput.value = criterioGuardado.peso;
+        }
+
+        const pesoSpan = document.getElementById("criterio_peso_validez");
+        if (pesoSpan && criterioGuardado?.peso) {
+            pesoSpan.textContent = criterioGuardado.peso + "%";
+        }
     };
 
-    // Función que configura el evento del botón Confirmar
     const setupConfirmButton = () => {
         const confirmarBtn = document.getElementById("btn_confirmar_validez");
 
@@ -76,40 +87,39 @@ document.addEventListener("DOMContentLoaded", () => {
             confirmarBtn.addEventListener("click", () => {
                 console.log('Botón Confirmar clickeado para validez');
 
-                const selectsValidez = document.querySelectorAll("#validez-column-checklist select");
-                const columnasSeleccionadasValidez = [];
+                const selects = document.querySelectorAll("#validez-column-checklist select");
+                const columnasSeleccionadas = [];
 
-                selectsValidez.forEach(select => {
+                selects.forEach(select => {
                     const columna = select.id.split("-")[2];
                     const tipoSeleccionado = select.value;
-                    columnasSeleccionadasValidez.push({ columna, tipo: tipoSeleccionado });
+                    columnasSeleccionadas.push({ columna, tipo: tipoSeleccionado });
                 });
 
-                if (columnasSeleccionadasValidez.length === 0) {
+                if (!columnasSeleccionadas.length) {
                     alert("Por favor, selecciona al menos un tipo de columna.");
                     return;
                 }
 
-                const pesoInputValidez = document.getElementById("peso_criterio_validez");
-                const pesoValidez = pesoInputValidez ? pesoInputValidez.value.trim() : "";
+                const pesoInput = document.getElementById("peso_criterio_validez");
+                const peso = pesoInput?.value.trim();
 
-                if (pesoValidez === "") {
+                if (!peso) {
                     alert("Por favor, ingresa un peso válido para validez.");
                     return;
                 }
 
                 const criterioValidezData = {
-                    columnas: columnasSeleccionadasValidez,
-                    peso: pesoValidez
+                    columnas: columnasSeleccionadas,
+                    peso: peso
                 };
+
+                localStorage.setItem("criterioValidez", JSON.stringify(criterioValidezData));
 
                 const pesoSpan = document.getElementById("criterio_peso_validez");
                 if (pesoSpan) {
-                    pesoSpan.textContent = pesoValidez + "%";
+                    pesoSpan.textContent = peso + "%";
                 }
-
-                console.log("Guardando datos en localStorage:", criterioValidezData);
-                localStorage.setItem("criterioValidez", JSON.stringify(criterioValidezData));
 
                 const popupOverlay = document.getElementById("popup-overlay");
                 if (popupOverlay) {
@@ -119,3 +129,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 });
+
+
+
+const mostrarPesoGuardadoValidez = () => {
+    const criterioGuardado = JSON.parse(localStorage.getItem("criterioValidez"));
+    const pesoSpan = document.getElementById("criterio_peso_validez");
+    
+    if (criterioGuardado?.peso && pesoSpan) {
+        pesoSpan.textContent = criterioGuardado.peso + "%";
+    }
+};
+
+mostrarPesoGuardadoValidez();

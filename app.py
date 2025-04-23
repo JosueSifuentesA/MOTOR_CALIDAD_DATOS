@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request,jsonify
-from src.db.db_connector import get_db_connection
+from src.db.db_connector import get_db_connection,extract_table_data
 from src.services.profiler import profile_table_data,list_all_tables,get_table_info
+from src.services.consistencia_service import procesar_datos 
+
 from flask_cors import CORS
 import os
 
@@ -80,21 +82,50 @@ def perfilar_tabla():
         return jsonify({"success": False, "error": f"Error inesperado: {str(e)}"}), 500
 
 
+@app.route('/evaluar_consistencia', methods=['GET'])
+def evaluar_consistencia():
+    try:
+        table_name = request.args.get("table_name")
+
+        if not table_name:
+            return jsonify({"success": False, "error": "No se proporcionó una tabla"}), 400
+
+        user = "USUARIO_DATAMART_MATERIALIDAD"
+        password = "USUARIO_DATAMART_MATERIALIDAD"
+        host = "localhost"
+        port = "1521"
+        service_name = "XE"
+
+        connection = get_db_connection(user, password, host, port, service_name)
+
+        try:
+            df = extract_table_data(connection, table_name)
+            resultado = procesar_datos(df)
+        except Exception as e:
+            return jsonify({"success": False, "error": f"Error al evaluar consistencia: {str(e)}"}), 500
+
+        return jsonify({"success": True, "resultado": resultado})
+
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Error inesperado: {str(e)}"}), 500
 
 
+@app.route("/evaluar-localstorage", methods=["POST"])
+def evaluar_localstorage():
+    data = request.get_json()
 
+    # Datos en tabla
+    tabla = data.get("data", [])
+    criterios = data.get("criterios", {})
 
+    if not tabla or not criterios:
+        return jsonify({"error": "Faltan datos o criterios"}), 400
 
+    df = pd.DataFrame(tabla)
 
+    resultado = evaluar_matriz_personalizada(df, criterios)
 
-
-
-
-
-
-
-
-
+    return jsonify(resultado)
 
 
 if __name__ == '__main__':

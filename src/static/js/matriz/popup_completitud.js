@@ -11,44 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     popupOverlay.classList.remove("hidden");
 
                     if (callback) callback();
-                }
-
-                // Lógica del botón confirmar para Completitud
-                const confirmarBtn = document.getElementById("btn_confirmar_completitud");
-                if (confirmarBtn) {
-                    confirmarBtn.addEventListener("click", () => {
-                        console.log('Botón Confirmar clickeado para completitud');
-
-                        const checkboxes = document.querySelectorAll("#completitud-column-checklist input[type='checkbox']:checked");
-                        const columnasSeleccionadas = [];
-                        checkboxes.forEach((checkbox) => {
-                            columnasSeleccionadas.push(checkbox.value);
-                        });
-
-                        const pesoInput = document.getElementById("peso_criterio_completitud");
-                        const peso = pesoInput ? pesoInput.value.trim() : "";
-
-                        if (peso === "") {
-                            alert("Por favor, ingresa un peso válido para completitud.");
-                            return;
-                        }
-
-                        const criterioData = {
-                            columnas: columnasSeleccionadas,
-                            peso: peso
-                        };
-
-                        const pesoSpan = document.getElementById("criterio_peso_completitud");
-                        if (pesoSpan) {
-                            pesoSpan.textContent = peso + "%";
-                        }
-
-
-                        console.log("Guardando datos en localStorage:", criterioData);
-                        localStorage.setItem("criterioCompletitud", JSON.stringify(criterioData));
-
-                        popupOverlay.classList.add("hidden");
-                    });
+                    cargarColumnasDesdeLocalStorage("completitud-column-checklist");
+                    setupConfirmarCompletitud(); // Aquí se mueve el setup para evitar duplicación
                 }
             })
             .catch(error => console.error("Error cargando popup:", error));
@@ -56,31 +20,92 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const cargarColumnasDesdeLocalStorage = (ulId) => {
         const profileData = JSON.parse(localStorage.getItem("profileData") || "[]");
+        const criterioGuardado = JSON.parse(localStorage.getItem("criterioCompletitud") || "{}");
         const ul = document.getElementById(ulId);
 
         if (!ul || profileData.length === 0) return;
 
+        ul.innerHTML = "";
+
         profileData.forEach((col, index) => {
             const li = document.createElement("li");
+
+            const checked = criterioGuardado.columnas?.includes(col.Columna) ? "checked" : "";
+
             li.innerHTML = `
                 <label>
-                    <input type="checkbox" name="columna_${index}" value="${col.Columna}" data-columna="${col.Columna}">
+                    <input type="checkbox" name="columna_${index}" value="${col.Columna}" data-columna="${col.Columna}" ${checked}>
                     ${col.Columna}
                 </label>`;
             ul.appendChild(li);
         });
+
+        const pesoInput = document.getElementById("peso_criterio_completitud");
+        if (criterioGuardado.peso && pesoInput) {
+            pesoInput.value = criterioGuardado.peso;
+        }
+    };
+
+    const setupConfirmarCompletitud = () => {
+        const confirmarBtn = document.getElementById("btn_confirmar_completitud");
+
+        if (confirmarBtn) {
+            confirmarBtn.addEventListener("click", () => {
+                console.log("Botón Confirmar clickeado para completitud");
+
+                const checkboxes = document.querySelectorAll("#completitud-column-checklist input[type='checkbox']:checked");
+                const columnasSeleccionadas = Array.from(checkboxes).map(cb => cb.value);
+
+                const pesoInput = document.getElementById("peso_criterio_completitud");
+                const peso = pesoInput ? pesoInput.value.trim() : "";
+
+                if (peso === "") {
+                    alert("Por favor, ingresa un peso válido para completitud.");
+                    return;
+                }
+
+                const criterioData = {
+                    columnas: columnasSeleccionadas,
+                    peso: peso
+                };
+
+                const pesoSpan = document.getElementById("criterio_peso_completitud");
+                if (pesoSpan) {
+                    pesoSpan.textContent = peso + "%";
+                }
+
+                console.log("Guardando datos en localStorage:", criterioData);
+                localStorage.setItem("criterioCompletitud", JSON.stringify(criterioData));
+
+                const popupOverlay = document.getElementById("popup-overlay");
+                if (popupOverlay) {
+                    popupOverlay.classList.add("hidden");
+                }
+            });
+        }
     };
 
     const botonCompletitud = document.getElementById("configurar_completitud");
     if (botonCompletitud) {
         botonCompletitud.addEventListener("click", () => {
             openPopupFromUrl("/static/html/static_matriz_html/popup_completitud.html", () => {
-                cargarColumnasDesdeLocalStorage("completitud-column-checklist");
+                console.log("Popup completitud cargado");
             });
         });
     }
 
-    // Cierre del popup con botón
+    const mostrarPesoGuardadoCompletitud = () => {
+        const criterioGuardado = JSON.parse(localStorage.getItem("criterioCompletitud"));
+        const pesoSpan = document.getElementById("criterio_peso_completitud");
+
+        if (criterioGuardado?.peso && pesoSpan) {
+            pesoSpan.textContent = criterioGuardado.peso + "%";
+        }
+    };
+
+    mostrarPesoGuardadoCompletitud();
+
+    
     const cerrarBtn = document.getElementById("popup-close");
     if (cerrarBtn) {
         cerrarBtn.addEventListener("click", () => {
@@ -91,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Cierre del popup al hacer clic fuera del contenido
+    
     const popupOverlay = document.getElementById("popup-overlay");
     if (popupOverlay) {
         popupOverlay.addEventListener("click", (e) => {

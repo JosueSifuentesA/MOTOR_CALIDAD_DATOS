@@ -1,7 +1,8 @@
 :root{
     --background_sidebar_color : #252527;
     --background_sidebar_option : white;
-    --background_sidebar_option_selected : #4F95F2;
+    /*--background_sidebar_option_selected : #4F95F2;*/
+    --background_sidebar_option_selected : #d9d9d9;
     --background_color : #1D1C1C;
     --font_color : #D9D9D9
 }

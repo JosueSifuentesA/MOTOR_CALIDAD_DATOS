@@ -172,6 +172,22 @@ h2{
 }
 
 
+.button_handler{
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+}
+
+#ejecutar_evaluacion{
+    background-color: var(--background_sidebar_option_selected);
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    color: white;
+    font-weight: bold;
+}
+
+
 .hidden {
     display: none;
 }

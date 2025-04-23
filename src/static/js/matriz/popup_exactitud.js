@@ -200,3 +200,15 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
 });
+
+// Mostrar el peso guardado al cargar la página (inicial)
+const mostrarPesoGuardadoExactitud= () => {
+    const criterioGuardado = JSON.parse(localStorage.getItem("criterioExactitud"));
+    const pesoSpan = document.getElementById("criterio_peso_exactitud");
+    
+    if (criterioGuardado?.peso && pesoSpan) {
+        pesoSpan.textContent = criterioGuardado.peso + "%";
+    }
+};
+
+mostrarPesoGuardadoExactitud();

@@ -137,7 +137,7 @@
                     
                     <div class="scale-up-center card_criterio card_criterio--usabilidad">
                         <div class="card_criterio_icono">
-                            <img src="{{ url_for('static', filename='img/matriz/usabilidad_icon.svg') }}"/>
+                            <img src="{{ url_for('static', filename='img/matriz/usabilidad_icon.svg') }}" />
                         </div>
                         <div class="card_criterio_info">
                             <label>Usabilidad</label>
@@ -146,6 +146,7 @@
                         <button id="configurar_usabilidad">Configurar criterio</button>
                     </div>
                     
+                    <!--
                     <div class="scale-up-center card_criterio card_criterio--interpretabilidad">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/interpretabilidad_icon.svg') }}"/>
@@ -156,8 +157,8 @@
                         </div>
                         <button id="configurar_interpretabilidad">Configurar criterio</button>
                     </div>
-                    
-                    
+                    -->
+                    <!--
                     <div class="scale-up-center card_criterio card_criterio--fiabilidad">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/fiabilidad_icon.svg') }}"/>
@@ -168,8 +169,8 @@
                         </div>
                         <button id="configurar_fiabilidad">Configurar criterio</button>
                     </div>
-                    
-                    
+                    -->
+                    <!--
                     <div class="scale-up-center card_criterio card_criterio--credibilidad">
                         <div class="card_criterio_icono">
                             <img src="{{ url_for('static', filename='img/matriz/credibilidad_icon.svg') }}"/>
@@ -180,7 +181,7 @@
                         </div>
                         <button id="configurar_credibilidad">Configurar criterio</button>
                     </div>
-                    
+                    -->
                     
                     
                     <div class="scale-up-center card_criterio card_criterio--consistencia">
@@ -209,6 +210,12 @@
                 </section>
             </section>
 
+
+            <div class="button_handler">
+                <button id="ejecutar_evaluacion">Ejecutar evaluación</button>
+            </div>
+
+
         </section>
     </main>
 
@@ -216,6 +223,7 @@
     <script src="{{url_for('static',filename='js/matriz/popup_completitud.js')}}"></script>
     <script src="{{url_for('static',filename='js/matriz/popup_validez.js')}}"></script>
     <script src="{{url_for('static',filename='js/matriz/popup_exactitud.js')}}"></script>
+    <script src="{{url_for('static',filename='js/matriz/popup_consistencia.js')}}"></script>
     <script src="{{ url_for('static', filename='js/step_module.js') }}"></script>
 
     

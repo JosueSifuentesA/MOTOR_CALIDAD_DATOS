@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     if (callback) callback();
 
-                    configurarConfirmacion();
+                    configurarConfirmacionUsabilidad();
                     configurarCierrePopup();
                 }
             })
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const ul = document.getElementById(ulId);
         if (!ul || profileData.length === 0) return;
 
-        ul.innerHTML = ""; // Limpia antes de agregar nuevas columnas
+        ul.innerHTML = "";
 
         profileData.forEach((col, index) => {
             const li = document.createElement("li");
@@ -35,9 +35,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 </label>`;
             ul.appendChild(li);
         });
+
+        
+        const criterioUsabilidadData = JSON.parse(localStorage.getItem("criterioUsabilidad"));
+        if (criterioUsabilidadData && criterioUsabilidadData.columnas) {
+            criterioUsabilidadData.columnas.forEach(columna => {
+                const checkbox = document.querySelector(`input[type="checkbox"][value="${columna}"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+        }
+
+        
+        const pesoInput = document.getElementById("peso_criterio_usabilidad");
+        if (criterioUsabilidadData && criterioUsabilidadData.peso) {
+            if (pesoInput) {
+                pesoInput.value = criterioUsabilidadData.peso;
+            }
+            const pesoSpan = document.getElementById("criterio_peso_usabilidad");
+            if (pesoSpan) {
+                pesoSpan.textContent = `${criterioUsabilidadData.peso}%`;
+            }
+        }
     };
 
-    const configurarConfirmacion = () => {
+    const configurarConfirmacionUsabilidad = () => {
         const confirmarBtn = document.getElementById("btn_confirmar_usabilidad");
         if (!confirmarBtn) return;
 
@@ -53,14 +76,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            const criterioUsabilidadData = {
+            const criterioData = {
                 columnas: columnasSeleccionadas,
                 peso: peso
             };
 
-            localStorage.setItem("criterioUsabilidad", JSON.stringify(criterioUsabilidadData));
+            
+            localStorage.setItem("criterioUsabilidad", JSON.stringify(criterioData));
 
-            // Actualiza visualmente el peso en el DOM si existe
+            
             const pesoSpan = document.getElementById("criterio_peso_usabilidad");
             if (pesoSpan) {
                 pesoSpan.textContent = `${peso}%`;
@@ -97,5 +121,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 cargarColumnasDesdeLocalStorage("usabilidad-column-checklist");
             });
         });
+    }
+
+    
+    const criterioUsabilidadData = JSON.parse(localStorage.getItem("criterioUsabilidad"));
+    if (criterioUsabilidadData && criterioUsabilidadData.peso) {
+        const pesoInput = document.getElementById("peso_criterio_usabilidad");
+        const pesoSpan = document.getElementById("criterio_peso_usabilidad");
+        if (pesoInput && pesoSpan) {
+            pesoInput.value = criterioUsabilidadData.peso;
+            pesoSpan.textContent = `${criterioUsabilidadData.peso}%`;
+        }
     }
 });

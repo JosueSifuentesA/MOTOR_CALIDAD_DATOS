@@ -1,0 +1,28 @@
+<div class="popup-content-loading">
+    <h2>Evaluando Consistencia</h2>
+    <p>Por favor espera mientras analizamos la tabla...</p>
+    <div class="progress-bar">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+    </div>
+</div>
+
+<style>
+.popup-content-loading {
+    text-align: center;
+    padding: 2rem;
+}
+.progress-bar {
+    width: 100%;
+    background-color: #eee;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 20px;
+    margin-top: 20px;
+}
+.progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #4caf50;
+    transition: width 0.4s ease-in-out;
+}
+</style>
