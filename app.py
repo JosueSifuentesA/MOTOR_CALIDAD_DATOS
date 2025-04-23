@@ -1,8 +1,11 @@
 from flask import Flask, render_template, request,jsonify
 from src.db.db_connector import get_db_connection,extract_table_data
 from src.services.profiler import profile_table_data,list_all_tables,get_table_info
-from src.services.consistencia_service import procesar_datos 
+from src.services.consistencia_service import procesar_datos
+from src.services.evaluacion_calidad_service import evaluar_matriz_personalizada 
 import pandas as pd
+import traceback
+
 
 
 from flask_cors import CORS
@@ -139,6 +142,7 @@ def evaluar_localstorage():
         try:
             df = extract_table_data(connection, nombre_tabla)
         except Exception as e:
+            traceback.print_exc()
             return jsonify({"success": False, "error": f"Error al obtener datos de la tabla: {str(e)}"}), 500
 
         # Evaluar los resultados según los criterios
@@ -148,6 +152,7 @@ def evaluar_localstorage():
         return jsonify(resultado)
 
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"success": False, "error": f"Error inesperado: {str(e)}"}), 500
 
 

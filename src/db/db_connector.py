@@ -56,6 +56,7 @@ def extract_table_data(connection, table_name):
     Extrae los datos completos de una tabla Oracle y los devuelve como un DataFrame de pandas.
     """
     try:
+        print(f"ERROR A LA HORA DE EXTRAER UNA TABLA {table_name}")
         cursor = connection.cursor()
 
         # IMPORTANTE: evita SQL Injection
