@@ -87,6 +87,8 @@ def evaluar_validez(df: pd.DataFrame, configuracion: list[dict], peso: float):
 def evaluar_matriz_personalizada(df: pd.DataFrame, criterios: dict):
     resultado = {}
 
+    print('ESTAMOS EN LA MATRIZ PERSONALIZADA')
+
     # Completitud
     if 'criterioCompletitud' in criterios:
         comp = criterios['criterioCompletitud']

@@ -74,8 +74,22 @@ const cargarCriteriosDesdeLocalStorage = () => {
 
 document.getElementById("ejecutar_evaluacion").addEventListener("click", async function () {
     try {
-        const tabla = JSON.parse(localStorage.getItem("tabla"));
-        const criterios = JSON.parse(localStorage.getItem("criteriosEvaluacion"));
+        const tabla = "selectedTableName";
+        //const criterios = JSON.parse(localStorage.getItem("criteriosEvaluacion"));
+
+        const criterios = {
+
+            criterioConsistencia: localStorage.getItem("criterioConsistencia"),
+            criterioExactitud: localStorage.getItem("criterioExactitud"),
+            criterioValidez: localStorage.getItem("criterioValidez"),
+            criterioUsabilidad: localStorage.getItem("criterioUsabilidad"),
+            //"criterioPesoConsistencia": JSON.parse(localStorage.getItem("criterioPesoConsistencia")),
+            criterioCompletitud: localStorage.getItem("criterioCompletitud"),
+
+        }
+
+        print(criterios)
+
 
         if (!tabla || !criterios) {
             alert("Faltan datos en localStorage. Asegúrate de tener 'tabla' y 'criteriosEvaluacion'.");
@@ -130,6 +144,7 @@ document.getElementById("ejecutar_evaluacion").addEventListener("click", async f
         document.getElementById("popup-overlay").classList.remove("hidden");
 
     } catch (err) {
+        console.log(err)
         console.error("Error de red o ejecución:", err);
         alert("Error inesperado al evaluar.");
     }

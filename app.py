@@ -2,6 +2,8 @@ from flask import Flask, render_template, request,jsonify
 from src.db.db_connector import get_db_connection,extract_table_data
 from src.services.profiler import profile_table_data,list_all_tables,get_table_info
 from src.services.consistencia_service import procesar_datos 
+import pandas as pd
+
 
 from flask_cors import CORS
 import os
@@ -115,17 +117,39 @@ def evaluar_localstorage():
     data = request.get_json()
 
     # Datos en tabla
-    tabla = data.get("data", [])
+    nombre_tabla = data.get("data", [])
     criterios = data.get("criterios", {})
 
-    if not tabla or not criterios:
+    print(criterios)
+
+    if not nombre_tabla or not criterios:
         return jsonify({"error": "Faltan datos o criterios"}), 400
 
-    df = pd.DataFrame(tabla)
+    try:
+        # Conexión a la base de datos
+        user = "USUARIO_DATAMART_MATERIALIDAD"
+        password = "USUARIO_DATAMART_MATERIALIDAD"
+        host = "localhost"
+        port = "1521"
+        service_name = "XE"
 
-    resultado = evaluar_matriz_personalizada(df, criterios)
+        connection = get_db_connection(user, password, host, port, service_name)
 
-    return jsonify(resultado)
+        # Obtener datos de la tabla desde la base de datos
+        try:
+            df = extract_table_data(connection, nombre_tabla)
+        except Exception as e:
+            return jsonify({"success": False, "error": f"Error al obtener datos de la tabla: {str(e)}"}), 500
+
+        # Evaluar los resultados según los criterios
+        resultado = evaluar_matriz_personalizada(df, criterios)
+
+        # Retornar el resultado
+        return jsonify(resultado)
+
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Error inesperado: {str(e)}"}), 500
+
 
 
 if __name__ == '__main__':

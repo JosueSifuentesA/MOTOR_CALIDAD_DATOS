@@ -40,6 +40,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 item["Tipo de Dato"] === "float64" || item["Tipo de Dato"].includes("datetime")
             );
     
+            // Si no hay columnas válidas, mostrar mensaje y guardar criterio vacío en localStorage
+            if (columnasFiltradas.length === 0) {
+                const mensaje = document.createElement('p');
+                mensaje.textContent = "La tabla no contiene columnas numéricas ni de fecha para aplicar el criterio de exactitud.";
+                mensaje.style.color = "gray";
+                mensaje.style.fontStyle = "italic";
+                checklistContainer.appendChild(mensaje);
+    
+                const confirmarBtn = document.getElementById("btn_confirmar_exactitud");
+                if (confirmarBtn) confirmarBtn.disabled = true;
+                if (confirmarBtn) confirmarBtn.textContent = "NO APLICA";
+                // Guardar criterio vacío pero válido
+                localStorage.setItem("criterioExactitud", JSON.stringify({
+                    columnas: [],
+                    peso: 0,
+                    accion_outliders: "quarantine"
+                }));
+                return;
+            }
+    
             columnasFiltradas.forEach(item => {
                 const listItem = document.createElement('li');
                 listItem.style.marginBottom = "1rem";
@@ -63,7 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     maxDate.classList.add('input-fecha');
                     maxDate.placeholder = 'Fecha máxima';
     
-                    
                     if (criterioExactitud && Array.isArray(criterioExactitud.columnas)) {
                         const colGuardada = criterioExactitud.columnas.find(c => c.columna === item.Columna && c.tipo === 'fecha');
                         if (colGuardada) {
@@ -82,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     listItem.appendChild(dateContainer);
                 } else if (item["Tipo de Dato"] === "float64") {
                     const columnaNombre = document.createElement('p');
-                    columnaNombre.textContent = `La columna ${item.Columna} es de tipo numerica , la busqueda de outliers es obligatoria`;
+                    columnaNombre.textContent = `La columna ${item.Columna} es de tipo numerica, la búsqueda de outliers es obligatoria`;
                     listItem.appendChild(columnaNombre);
                 }
     
