@@ -1,21 +1,49 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime
-
+import logging
 # ----------- MÉTODOS PARA CADA CRITERIO -----------
+logging.basicConfig(filename='evaluacion_validez.log', level=logging.INFO)
+
+
 
 def evaluar_completitud(df: pd.DataFrame, columnas: list[str], peso: float):
     completitud_scores = {}
+
+    # Usamos df.info() para ver la cantidad de nulos en cada columna
+    print("Resumen del DataFrame:")
+    df.info()  # Muestra el conteo de valores no nulos por columna
+
+    # Calculamos la completitud para cada columna
     for col in columnas:
         try:
-            porcentaje_nulos = df[col].isna().mean()
-            completitud_scores[col] = 1 - porcentaje_nulos
+            # Verificar si la columna existe en el DataFrame
+            if col not in df.columns:
+                print(f"Columna {col} no existe en el DataFrame.")
+                continue
+
+            # Calcular el porcentaje de valores no nulos
+            total_filas = len(df)
+            nulos = df[col].isna().sum()  # Número de valores nulos
+            completitud = 1 - (nulos / total_filas)  # Compleción = (filas no nulas) / total filas
+
+            completitud_scores[col] = completitud
+            print(f"Completitud de la columna '{col}': {completitud:.2f}")
+
         except Exception as e:
-            print(f"Error en evaluar_completitud para la columna {col}: {e}")
+            print(f"Error en la columna {col}: {e}")
             completitud_scores[col] = 0  # Valor por defecto en caso de error
-    promedio = np.mean(list(completitud_scores.values()))
-    score_final = promedio * peso / 100
+
+    # Calculamos el score final tomando el promedio de los scores de completitud
+    if completitud_scores:
+        promedio_completitud = sum(completitud_scores.values()) / len(completitud_scores)
+        score_final = promedio_completitud * peso / 100
+    else:
+        score_final = 0  # Si no se puede calcular completitud
+
     return {"score": score_final, "detalle": completitud_scores}
+
+
 
 
 def evaluar_consistencia(consistencia_localstorage: dict, peso: float):
@@ -71,23 +99,37 @@ def evaluar_usabilidad(df: pd.DataFrame, columnas: list[str], peso: float):
     usabilidad_scores = {}
     for col in columnas:
         try:
+            # Verificamos si la columna existe en el DataFrame
+            if col not in df.columns:
+                print(f"Columna {col} no encontrada en el DataFrame.")
+                usabilidad_scores[col] = 0
+                continue
+
+            # Calculamos el porcentaje de valores nulos
             porcentaje_nulos = df[col].isna().mean()
             usabilidad_scores[col] = 1 - porcentaje_nulos
         except Exception as e:
             print(f"Error en evaluar_usabilidad para la columna {col}: {e}")
             usabilidad_scores[col] = 0  # Valor por defecto en caso de error
+    
     score_final = np.mean(list(usabilidad_scores.values())) * peso / 100
     return {"score": score_final, "detalle": usabilidad_scores}
 
 
 def evaluar_validez(df: pd.DataFrame, configuracion: list[dict], peso: float):
     validez_scores = {}
+    print(configuracion)
     for col_def in configuracion:
+        col = col_def.get('columna', None)  # Asegura que col esté siempre definida, incluso si falta
+        if not col:
+            logging.error("Columna no encontrada en la configuración.")
+            continue  # Si no encontramos la columna, pasamos al siguiente elemento de la lista
+
         try:
-            col = col_def['columna']
             tipo_esperado = col_def['tipo']
             serie = df[col]
 
+            # Lógica para validar tipos
             if tipo_esperado == 'fecha':
                 validos = pd.to_datetime(serie, errors='coerce').notna().mean()
             elif tipo_esperado == 'texto':
@@ -95,12 +137,16 @@ def evaluar_validez(df: pd.DataFrame, configuracion: list[dict], peso: float):
             elif tipo_esperado == 'numero':
                 validos = pd.to_numeric(serie, errors='coerce').notna().mean()
             else:
-                validos = 0  # tipo desconocido
+                # Registro si el tipo es desconocido
+                logging.warning(f"Tipo desconocido para la columna {col}: {tipo_esperado}")
+                validos = 0  # Tipo desconocido
             validez_scores[col] = validos
         except Exception as e:
-            print(f"Error en evaluar_validez para la columna {col}: {e}")
+            # Registra el error con más detalles
+            logging.error(f"Error en evaluar_validez para la columna {col}: {e}")
             validez_scores[col] = 0  # Valor por defecto en caso de error
 
+    # Calcula el score final basado en los valores de las columnas
     score_final = np.mean(list(validez_scores.values())) * peso / 100
     return {"score": score_final, "detalle": validez_scores}
 
@@ -127,22 +173,21 @@ def evaluar_matriz_personalizada(df: pd.DataFrame, criterios: dict):
             float(cons['score_global'] * 100 / 25)
         )
 
-
-
-
     # Exactitud
     if 'criterioExactitud' in criterios:
         exact = json.loads(criterios['criterioExactitud'])  # decodificas el string JSON a dict
         resultado['exactitud'] = evaluar_exactitud(df, exact, float(exact['peso']))
 
-
     # Usabilidad
     if 'criterioUsabilidad' in criterios:
-        resultado['usabilidad'] = evaluar_usabilidad(df, criterios['criterioUsabilidad'], 15)
+        usabilidad = json.loads(criterios['criterioUsabilidad'])
+        usabilidad['peso'] = float(usabilidad['peso'])  # Convertimos el peso a número
+        resultado['usabilidad'] = evaluar_usabilidad(df, usabilidad['columnas'], usabilidad['peso'])
 
     # Validez
-    if 'criterioValidez' in criterios:
-        resultado['validez'] = evaluar_validez(df, criterios['criterioValidez'], 10)
+    #if 'criterioValidez' in criterios:
+    #    validez = json.loads(criterios['criterioValidez'])
+    #    resultado['validez'] = evaluar_validez(df, validez, 10)
 
     # Score final
     total = sum(res['score'] for res in resultado.values())
