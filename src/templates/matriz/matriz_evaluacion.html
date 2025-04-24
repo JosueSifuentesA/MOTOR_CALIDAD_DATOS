@@ -191,7 +191,7 @@
                         </div>
                         <div class="card_criterio_info">
                             <label>Consistencia</label>
-                            <label>Peso: <span id="criterio_peso_consistencia">20%</span></label>
+                            <label>Peso: <span id="criterio_peso_consistencia">-</span></label>
                         </div>
                         <button id="configurar_consistencia">Configurar criterio</button>
                     </div>
@@ -220,14 +220,14 @@
         </section>
     </main>
 
-    <script src="{{url_for('static',filename='js/matriz/popup_usabilidad.js')}}"></script>
-    <script src="{{url_for('static',filename='js/matriz/popup_completitud.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/step_module.js') }}"></script>
     <script src="{{url_for('static',filename='js/matriz/popup_validez.js')}}"></script>
     <script src="{{url_for('static',filename='js/matriz/popup_exactitud.js')}}"></script>
     <script src="{{url_for('static',filename='js/matriz/popup_consistencia.js')}}"></script>
     <script src="{{url_for('static',filename='js/matriz/matriz_validacion.js')}}"></script>
-    <script src="{{ url_for('static', filename='js/step_module.js') }}"></script>
-
+    <script src="{{url_for('static',filename='js/matriz/popup_usabilidad.js')}}"></script>
+    <script src="{{url_for('static',filename='js/matriz/popup_completitud.js')}}"></script>
+    
     
     
     

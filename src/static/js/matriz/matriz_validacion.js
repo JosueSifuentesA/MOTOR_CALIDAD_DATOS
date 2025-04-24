@@ -13,7 +13,7 @@ document.getElementById("ejecutar_evaluacion").addEventListener("click", async f
         }
 
         if (!tabla || !criterios) {
-            alert("Faltan datos en localStorage. Asegúrate de tener 'tabla' y 'criteriosEvaluacion'.");
+            alert("No se registraron la tabla o los criterios de evaluación, revisar.");
             return;
         }
 
