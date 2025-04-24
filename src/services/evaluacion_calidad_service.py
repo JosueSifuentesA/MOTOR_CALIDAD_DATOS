@@ -32,6 +32,7 @@ def evaluar_completitud(df: pd.DataFrame, columnas: list[str], peso: float):
 
         except Exception as e:
             print(f"Error en la columna {col}: {e}")
+            traceback.print_exc()
             completitud_scores[col] = 0  # Valor por defecto en caso de error
 
     # Calculamos el score final tomando el promedio de los scores de completitud
@@ -54,6 +55,7 @@ def evaluar_consistencia(consistencia_localstorage: dict, peso: float):
         score_global = np.mean(list(scores.values())) * peso
     except Exception as e:
         print(f"Error en evaluar_consistencia: {e}")
+        traceback.print_exc()
         scores = {}
         score_global = 0
     return {"score": score_global / 100, "detalle": scores}
@@ -90,6 +92,7 @@ def evaluar_exactitud(df: pd.DataFrame, criterio: dict, peso: float):
         except Exception as e:
             print(f"Error en evaluar_exactitud para la columna {col}: {e}")
             outliers_detectados[col] = 0  # Valor por defecto en caso de error
+            traceback.print_exc()
 
     score_final = np.mean(list(outliers_detectados.values())) * peso / 100
     return {"score": score_final, "detalle": outliers_detectados}
@@ -102,6 +105,7 @@ def evaluar_usabilidad(df: pd.DataFrame, columnas: list[str], peso: float):
             # Verificamos si la columna existe en el DataFrame
             if col not in df.columns:
                 print(f"Columna {col} no encontrada en el DataFrame.")
+                traceback.print_exc()
                 usabilidad_scores[col] = 0
                 continue
 
@@ -110,6 +114,7 @@ def evaluar_usabilidad(df: pd.DataFrame, columnas: list[str], peso: float):
             usabilidad_scores[col] = 1 - porcentaje_nulos
         except Exception as e:
             print(f"Error en evaluar_usabilidad para la columna {col}: {e}")
+            traceback.print_exc()
             usabilidad_scores[col] = 0  # Valor por defecto en caso de error
     
     score_final = np.mean(list(usabilidad_scores.values())) * peso / 100
@@ -123,6 +128,7 @@ def evaluar_validez(df: pd.DataFrame, configuracion: list[dict], peso: float):
         col = col_def.get('columna', None)  # Asegura que col esté siempre definida, incluso si falta
         if not col:
             logging.error("Columna no encontrada en la configuración.")
+            traceback.print_exc()
             continue  # Si no encontramos la columna, pasamos al siguiente elemento de la lista
 
         try:
@@ -144,6 +150,7 @@ def evaluar_validez(df: pd.DataFrame, configuracion: list[dict], peso: float):
         except Exception as e:
             # Registra el error con más detalles
             logging.error(f"Error en evaluar_validez para la columna {col}: {e}")
+            traceback.print_exc()
             validez_scores[col] = 0  # Valor por defecto en caso de error
 
     # Calcula el score final basado en los valores de las columnas

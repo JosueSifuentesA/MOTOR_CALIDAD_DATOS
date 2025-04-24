@@ -145,6 +145,8 @@ def evaluar_localstorage():
             traceback.print_exc()
             return jsonify({"success": False, "error": f"Error al obtener datos de la tabla: {str(e)}"}), 500
 
+
+        
         # Evaluar los resultados según los criterios
         resultado = evaluar_matriz_personalizada(df, criterios)
 
