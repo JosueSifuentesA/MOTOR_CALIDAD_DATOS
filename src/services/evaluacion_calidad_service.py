@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import logging
+import math
 # ----------- MÉTODOS PARA CADA CRITERIO -----------
 logging.basicConfig(filename='evaluacion_validez.log', level=logging.INFO)
 
@@ -60,13 +61,30 @@ def evaluar_consistencia(consistencia_localstorage: dict, peso: float):
         score_global = 0
     return {"score": score_global / 100, "detalle": scores}
 
+def reemplazar_nan_en_dict(d):
+    if isinstance(d, dict):
+        return {k: reemplazar_nan_en_dict(v) for k, v in d.items()}
+    elif isinstance(d, list):
+        return [reemplazar_nan_en_dict(i) for i in d]
+    elif isinstance(d, float) and (math.isnan(d) or math.isinf(d)):
+        return None  # o 0 si prefieres
+    else:
+        return d
+
+
+
 
 def evaluar_exactitud(df: pd.DataFrame, criterio: dict, peso: float):
     outliers_detectados = {}
-    for col_config in criterio['columnas']:
+
+    for col_config in criterio.get('columnas', []):
         try:
             col = col_config['columna']
             tipo = col_config['tipo']
+
+            if col not in df.columns:
+                continue
+
             if tipo == 'fecha':
                 fechas = pd.to_datetime(df[col], errors='coerce')
                 fechas_validas = fechas.dropna()
@@ -78,7 +96,8 @@ def evaluar_exactitud(df: pd.DataFrame, criterio: dict, peso: float):
                 min_ = q1 - 1.5 * iqr
                 max_ = q3 + 1.5 * iqr
                 outliers = ((fechas_validas < min_) | (fechas_validas > max_)).mean()
-            else:
+
+            else:  # numérico
                 valores = pd.to_numeric(df[col], errors='coerce').dropna()
                 if valores.empty:
                     continue
@@ -88,14 +107,26 @@ def evaluar_exactitud(df: pd.DataFrame, criterio: dict, peso: float):
                 min_ = q1 - 1.5 * iqr
                 max_ = q3 + 1.5 * iqr
                 outliers = ((valores < min_) | (valores > max_)).mean()
+
             outliers_detectados[col] = 1 - outliers
+
         except Exception as e:
             print(f"Error en evaluar_exactitud para la columna {col}: {e}")
-            outliers_detectados[col] = 0  # Valor por defecto en caso de error
             traceback.print_exc()
+            outliers_detectados[col] = 0  # Por defecto en caso de error
 
-    score_final = np.mean(list(outliers_detectados.values())) * peso / 100
-    return {"score": score_final, "detalle": outliers_detectados}
+    # Calcular score si hay columnas válidas
+    if outliers_detectados:
+        score_final = np.mean(list(outliers_detectados.values())) * peso / 100
+    else:
+        score_final = float('nan')
+
+    resultado = {
+        "score": score_final,
+        "detalle": outliers_detectados
+    }
+
+    return reemplazar_nan_en_dict(resultado)
 
 
 def evaluar_usabilidad(df: pd.DataFrame, columnas: list[str], peso: float):
@@ -197,6 +228,7 @@ def evaluar_matriz_personalizada(df: pd.DataFrame, criterios: dict):
     #    resultado['validez'] = evaluar_validez(df, validez, 10)
 
     # Score final
-    total = sum(res['score'] for res in resultado.values())
+    total = sum(res['score'] for res in resultado.values() if res['score'] is not None)
+
     resultado['score_final'] = round(total, 4)
     return resultado
