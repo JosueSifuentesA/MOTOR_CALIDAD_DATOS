@@ -77,7 +77,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (popupOverlay) {
                     popupOverlay.classList.add("hidden");
                 }
-
                 alert("Peso guardado exitosamente.");
             } else {
                 alert("Por favor, ingresa un peso válido entre 0 y 100.");

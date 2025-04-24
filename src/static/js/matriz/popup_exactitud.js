@@ -184,6 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (popupOverlay) {
                     popupOverlay.classList.add("hidden");
                 }
+
             });
         }
     };

@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     if (callback) callback();
                     cargarColumnasDesdeLocalStorage("completitud-column-checklist");
-                    setupConfirmarCompletitud(); // Aquí se mueve el setup para evitar duplicación
+                    setupConfirmarCompletitud();
                 }
             })
             .catch(error => console.error("Error cargando popup:", error));
@@ -103,9 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    mostrarPesoGuardadoCompletitud();
-
-    
     const cerrarBtn = document.getElementById("popup-close");
     if (cerrarBtn) {
         cerrarBtn.addEventListener("click", () => {
@@ -125,4 +122,5 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
 });

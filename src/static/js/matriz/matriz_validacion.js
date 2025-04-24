@@ -12,13 +12,41 @@ document.getElementById("ejecutar_evaluacion").addEventListener("click", async f
 
         }
 
-        print(criterios)
-
-
         if (!tabla || !criterios) {
             alert("Faltan datos en localStorage. Asegúrate de tener 'tabla' y 'criteriosEvaluacion'.");
             return;
         }
+
+        const totalPesos = (() => {
+            const keys = [
+                "criterioConsistencia",
+                "criterioExactitud",
+                "criterioValidez",
+                "criterioUsabilidad",
+                "criterioCompletitud"
+            ];
+        
+            let total = 0;
+            for (const key of keys) {
+                const criterio = localStorage.getItem(key);
+                if (criterio) {
+                    try {
+                        const objeto = JSON.parse(criterio);
+                        const peso = parseFloat(objeto.peso);
+                        if (!isNaN(peso)) total += peso;
+                    } catch (e) {}
+                }
+            }
+            return total;
+        })();
+        
+        if (totalPesos > 100) {
+            alert("⚠️ El total de los pesos supera el 100%. Ajusta los valores antes de continuar.");
+            return;
+        }
+        
+
+
 
         const response = await fetch("/evaluar-localstorage", {
             method: "POST",
@@ -57,12 +85,10 @@ document.getElementById("ejecutar_evaluacion").addEventListener("click", async f
             popupContent.appendChild(section);
         }
 
-        // Agregar score final
         const total = document.createElement("h3");
         total.textContent = `🎯 Score Final: ${(resultado.score_final * 100).toFixed(2)}%`;
         popupContent.appendChild(total);
 
-        // Mostrar popup
         document.getElementById("popup-overlay").classList.remove("hidden");
 
     } catch (err) {
@@ -72,7 +98,6 @@ document.getElementById("ejecutar_evaluacion").addEventListener("click", async f
     }
 });
 
-// Botón para cerrar popup
 document.getElementById("popup-close").addEventListener("click", function () {
     document.getElementById("popup-overlay").classList.add("hidden");
 });

@@ -59,17 +59,17 @@ def extract_table_data(connection, table_name):
         print(f"ERROR A LA HORA DE EXTRAER UNA TABLA {table_name}")
         cursor = connection.cursor()
 
-        # IMPORTANTE: evita SQL Injection
+        
         query = f'SELECT * FROM "{table_name}"'
         cursor.execute(query)
 
-        # Obtener nombres de columnas
+        
         columnas = [col[0] for col in cursor.description]
 
-        # Cargar todos los resultados
+        
         rows = cursor.fetchall()
 
-        # Crear el DataFrame
+        
         df = pd.DataFrame(rows, columns=columnas)
         print('DTOS EXTRAIDOS DE LA TABLA')
         cursor.close()

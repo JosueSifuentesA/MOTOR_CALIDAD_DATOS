@@ -193,6 +193,11 @@ h2{
 }
 
 
-
+.delete_bad_data{
+    display: none;
+}
+.quarantine_bad_data_iconhandler{
+    display: none;
+}
 
 .scale-up-center{animation:scale-up-center 0.4s; } @keyframes scale-up-center{ 0%{transform:scale(.5)} 100%{transform:scale(1)} }
