@@ -36,7 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
             ul.appendChild(li);
         });
 
-        
         const criterioUsabilidadData = JSON.parse(localStorage.getItem("criterioUsabilidad"));
         if (criterioUsabilidadData && criterioUsabilidadData.columnas) {
             criterioUsabilidadData.columnas.forEach(columna => {
@@ -47,15 +46,15 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        
-        const pesoInput = document.getElementById("peso_criterio_usabilidad");
-        if (criterioUsabilidadData && criterioUsabilidadData.peso) {
-            if (pesoInput) {
-                pesoInput.value = criterioUsabilidadData.peso;
-            }
+        const criterioUsabilidadData2 = JSON.parse(localStorage.getItem("criterioUsabilidad"));
+        if (criterioUsabilidadData2 && criterioUsabilidadData2.peso) {
+            const pesoInput = document.getElementById("peso_criterio_usabilidad");
             const pesoSpan = document.getElementById("criterio_peso_usabilidad");
+            if (pesoInput) {
+                pesoInput.value = criterioUsabilidadData2.peso;
+            }
             if (pesoSpan) {
-                pesoSpan.textContent = `${criterioUsabilidadData.peso}%`;
+                pesoSpan.textContent = `${criterioUsabilidadData2.peso}%`;
             }
         }
     };
@@ -81,10 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 peso: peso
             };
 
-            
             localStorage.setItem("criterioUsabilidad", JSON.stringify(criterioData));
 
-            
             const pesoSpan = document.getElementById("criterio_peso_usabilidad");
             if (pesoSpan) {
                 pesoSpan.textContent = `${peso}%`;
@@ -123,14 +120,4 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    
-    const criterioUsabilidadData = JSON.parse(localStorage.getItem("criterioUsabilidad"));
-    if (criterioUsabilidadData && criterioUsabilidadData.peso) {
-        const pesoInput = document.getElementById("peso_criterio_usabilidad");
-        const pesoSpan = document.getElementById("criterio_peso_usabilidad");
-        if (pesoInput && pesoSpan) {
-            pesoInput.value = criterioUsabilidadData.peso;
-            pesoSpan.textContent = `${criterioUsabilidadData.peso}%`;
-        }
-    }
 });

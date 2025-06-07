@@ -66,6 +66,8 @@ document.getElementById("ejecutar_evaluacion").addEventListener("click", async f
             return;
         }
 
+        localStorage.setItem("resultado_evaluacion", JSON.stringify(resultado));
+
         const popupContent = document.getElementById("popup-content");
         popupContent.innerHTML = "";
         for (const [criterio, info] of Object.entries(resultado)) {

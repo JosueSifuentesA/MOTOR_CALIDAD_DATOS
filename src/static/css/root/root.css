@@ -2,9 +2,11 @@
     --background_sidebar_color : #252527;
     --background_sidebar_option : white;
     /*--background_sidebar_option_selected : #4F95F2;*/
-    --background_sidebar_option_selected : #d9d9d9;
+    /*--background_sidebar_option_selected : #d9d9d9;*/
     --background_color : #1D1C1C;
-    --font_color : #D9D9D9
+    --font_color : #D9D9D9;
+    --font_secondary_color : #d9d9d9;
+    --background_sidebar_option_selected : #4F95F2;
 }
 
 header{
@@ -116,6 +118,113 @@ h2{
 }
 .line--pendiente {
   background-color: white;
+}
+
+
+.criteria_configuration_handler h2{
+  color: white;
+}
+
+.criteria_configuration_handler span{
+    color: var(--font_color);
+}
+
+.criterio_option_exportation_container_handler{
+  display: flex;
+  flex-flow: row;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.criterio_option_exportation_container{
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+  padding: 10px;
+  background-color: var(--background_sidebar_color);
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+}
+
+.criterio_option_exportation_container_icon_container{
+  width: 60px;
+  box-sizing: border-box;
+}
+
+.criterio_option_exportation_container_icon_container img{
+  width: 100%;
+  filter: invert(96%) sepia(0%) saturate(0%) hue-rotate(200deg) brightness(93%) contrast(89%);
+}
+
+.criteria_configuration_handler{
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+  padding: 20px 0px;
+}
+
+.criteria_configuration_handler h2{
+  margin: 0px;
+}
+
+.configuration_form select{
+    background-color: var(--background_sidebar_color);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    width: 50%;
+}
+
+.configuration_form_exportation{
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+  padding: 10px 0px;
+}
+
+.configuration_form_exportation span{
+  color: var(--font_secondary_color);
+}
+
+.configuration_form_exportation h2{
+  margin: 0px;
+  color: white;
+}
+
+.criterio_option_exportation_container span{
+  color: var(--font_color);
+}
+
+.configuration_form_metadata span{
+  color: var(--font_color);
+}
+
+.configuration_form_metadata h2{
+  color: white;
+  margin: 0px;
+}
+
+.configuration_form_metadata{
+  display: flex;
+  flex-flow: column;
+  gap : 10px;
+  padding: 10px 0px;
+}
+
+.configuration_form_option_container{
+  color:white;
+}
+
+#ejecutar_exportacion{
+  background-color: var(--);
+}
+
+.criterio_option_exportation_container:hover{
+  border : 1px solid #4F95F2;
+  cursor: pointer;
 }
 
 

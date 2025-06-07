@@ -180,7 +180,6 @@ def evaluar_validez(df: pd.DataFrame, configuracion: list[dict], peso: float):
                 validos = 0  # Tipo desconocido
             validez_scores[col] = validos
         except Exception as e:
-            s
             logging.error(f"Error en evaluar_validez para la columna {col}: {e}")
             traceback.print_exc()
             validez_scores[col] = 0

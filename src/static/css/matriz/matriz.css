@@ -94,7 +94,7 @@ h2{
 .popup {
     background: var(--background_sidebar_color);
     border-radius: 10px;
-    padding: 20px;
+    padding: 45px;
     width: 500px;
     max-width: 90%;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
@@ -122,7 +122,9 @@ h2{
 #popup-content{
     display: flex;
     flex-flow: column;
-    gap:5px
+    gap:5px;
+    max-height: 500px;
+    overflow: auto;
 }
 
 #popup-content button{

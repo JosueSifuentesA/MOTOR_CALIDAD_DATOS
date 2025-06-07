@@ -5,6 +5,11 @@ from src.services.consistencia_service import procesar_datos
 from src.services.evaluacion_calidad_service import evaluar_matriz_personalizada 
 import pandas as pd
 import traceback
+from flask import Flask, request, jsonify, send_file
+import pandas as pd
+from io import BytesIO
+from datetime import datetime
+import traceback
 
 
 
@@ -156,6 +161,82 @@ def evaluar_localstorage():
     except Exception as e:
         traceback.print_exc()
         return jsonify({"success": False, "error": f"Error inesperado: {str(e)}"}), 500
+
+
+
+@app.route("/exportar_reusultados",methods=['GET'])
+def exportar_resultados_view():
+
+    return render_template('exportation/exportation.html')
+
+
+
+@app.route("/exportar-excel", methods=["POST"])
+def exportar_excel():
+    try:
+        data = request.get_json()
+
+        resultado_json = data.get("data", {})
+        criterios = data.get("criterios", [])  # ej: ["completitud", "consistencia"]
+        detalle = data.get("detalle", "resumen")  # "resumen" o "variable"
+        metadatos = data.get("metadatos", [])  # ["fecha", "usuario", "motor"]
+        usuario = data.get("usuario", "Desconocido")
+        motor = data.get("motor", "No especificado")
+
+        if not resultado_json or not criterios:
+            return jsonify({"error": "Faltan datos o criterios para exportar"}), 400
+
+        # Generar DataFrame según detalle
+        if detalle == "resumen":
+            rows = []
+            for criterio in criterios:
+                if criterio in resultado_json:
+                    score = resultado_json[criterio].get("score")
+                    rows.append({"Criterio": criterio, "Score": round(score, 4)})
+            df_export = pd.DataFrame(rows)
+
+        elif detalle == "variable":
+            rows = []
+            for criterio in criterios:
+                if criterio in resultado_json:
+                    detalle_criterio = resultado_json[criterio].get("detalle", {})
+                    for variable, valor in detalle_criterio.items():
+                        rows.append({
+                            "Criterio": criterio,
+                            "Variable": variable,
+                            "Valor": round(valor, 4)
+                        })
+            df_export = pd.DataFrame(rows)
+
+        else:
+            return jsonify({"error": "Tipo de detalle no válido"}), 400
+
+        # Crear Excel en memoria
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df_export.to_excel(writer, sheet_name='Evaluación', index=False)
+
+            # Agregar metadatos si se pidieron
+            metadatos_data = []
+            if "fecha" in metadatos:
+                metadatos_data.append(["Fecha de Evaluación", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
+            if "usuario" in metadatos:
+                metadatos_data.append(["Usuario", usuario])
+            if "motor" in metadatos:
+                metadatos_data.append(["Motor BD", motor])
+
+            if metadatos_data:
+                df_meta = pd.DataFrame(metadatos_data, columns=["Campo", "Valor"])
+                df_meta.to_excel(writer, sheet_name='Metadatos', index=False)
+
+        output.seek(0)
+        return send_file(output, download_name="reporte_calidad.xlsx", as_attachment=True)
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"success": False, "error": f"Error exportando el Excel: {str(e)}"}), 500
+
+
 
 
 
