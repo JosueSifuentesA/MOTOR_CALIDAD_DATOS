@@ -86,46 +86,81 @@
                 </div>
             </section>
 
-            <section class="criteria_configuration_handler">
-                <h2>Criterios a exportar</h2>
-                <span>Seleccione los criterios que se desean exportar en el reporte</span>
-                <div class="criterio_option_exportation_container_handler">
-                    <div id="criterio_exactitud" class="criterio_option_exportation_container">
-                        <div class="criterio_option_exportation_container_icon_container">
-                            <img src="{{ url_for('static', filename='img/matriz/exactitud_icon.svg') }}" alt="Exactitud"/>
-                        </div>
-                        <span>Exactitud</span>
-                    </div>
-                    <div id="criterio_completitud"  class="criterio_option_exportation_container">
-                        <div class="criterio_option_exportation_container_icon_container">
-                            <img src="{{ url_for('static', filename='img/matriz/completitud_icon.svg') }}" alt="Completitud"/>
-                        </div>
-                        <span>Completitud</span>
-                    </div>
-                    <div id="criterio_consistencia"  class="criterio_option_exportation_container">
-                        <div class="criterio_option_exportation_container_icon_container">
-                            <img src="{{ url_for('static', filename='img/matriz/consistencia_icon.svg') }}" alt="Consistencia"/>
-                        </div>
-                        <span>Consistencia</span>
-                    </div>
-                    <div id="criterio_usabilidad"  class="criterio_option_exportation_container">
-                        <div class="criterio_option_exportation_container_icon_container">
-                            <img src="{{ url_for('static', filename='img/matriz/usabilidad_icon.svg') }}" alt="Usabilidad"/>
-                        </div>
-                        <span>Usabilidad</span>
-                    </div>
-                    <div id="criterio_validez" class="criterio_option_exportation_container">
-                        <div class="criterio_option_exportation_container_icon_container">
-                            <img src="{{ url_for('static', filename='img/matriz/validez_icon.svg') }}" alt="Validez"/>
-                        </div>
-                        <span>Validez</span>
-                    </div>
-                </div>
-            </section>
-
+            
+            
             <form class="configuration_form">
+                <section class="criteria_configuration_handler">
+                    <h2>Criterios a exportar</h2>
+                    <span>Seleccione los criterios que se desean exportar en el reporte</span>
+                    <div class="criterio_option_exportation_container_handler">
+                        
+                        <input type="checkbox" id="criterio_exactitud" name="criterios" value="exactitud" hidden>
+                        <label for="criterio_exactitud" class="criterio_option_exportation_container">
+                            <div class="criterio_option_exportation_container_icon_container">
+                                <img src="{{ url_for('static', filename='img/matriz/exactitud_icon.svg') }}" alt="Exactitud"/>
+                            </div>
+                            <span>Exactitud</span>
+                        </label>
+    
+                        <input type="checkbox" id="criterio_completitud" name="criterios" value="completitud" hidden>
+                        <label for="criterio_completitud" class="criterio_option_exportation_container">
+                            <div class="criterio_option_exportation_container_icon_container">
+                                <img src="{{ url_for('static', filename='img/matriz/completitud_icon.svg') }}" alt="Completitud"/>
+                            </div>
+                            <span>Completitud</span>
+                        </label>
+    
+                        <input type="checkbox" id="criterio_consistencia" name="criterios" value="consistencia" hidden>
+                        <label for="criterio_consistencia" class="criterio_option_exportation_container">
+                            <div class="criterio_option_exportation_container_icon_container">
+                                <img src="{{ url_for('static', filename='img/matriz/consistencia_icon.svg') }}" alt="Consistencia"/>
+                            </div>
+                            <span>Consistencia</span>
+                        </label>
+    
+                        <input type="checkbox" id="criterio_usabilidad" name="criterios" value="usabilidad" hidden>
+                        <label for="criterio_usabilidad" class="criterio_option_exportation_container">
+                            <div class="criterio_option_exportation_container_icon_container">
+                                <img src="{{ url_for('static', filename='img/matriz/usabilidad_icon.svg') }}" alt="Usabilidad"/>
+                            </div>
+                            <span>Usabilidad</span>
+                        </label>
+    
+                        <input type="checkbox" id="criterio_validez" name="criterios" value="validez" hidden>
+                        <label for="criterio_validez" class="criterio_option_exportation_container">
+                            <div class="criterio_option_exportation_container_icon_container">
+                                <img src="{{ url_for('static', filename='img/matriz/validez_icon.svg') }}" alt="Validez"/>
+                            </div>
+                            <span>Validez</span>
+                        </label>
+    
+                    </div>
+                </section>
                 <div class="configuration_form_exportation">
                     <h2>Configuración de exportación</h2>
+                    <span>Configura el reporte que vas a exportar</span>
+                    <div class="configuration_form_text_input_handler">
+                        <label>Ingresa el nombre del archivo que vas a exportar</label>
+                        <input name="file_name" placeholder="Exportado (.csv,.pdf)"/>
+                    </div>
+                </div>
+
+                <div class="Configuration_exportation_options_handler">
+                    <input type="radio" id="pdf_option" name="tipo_reporte" value="pdf" hidden>
+                    <label for="pdf_option" class="opcion_visual">
+                        <img src="{{ url_for('static', filename='img/exportation/pdf_icon.svg') }}" alt="Reporte Detallado" />
+                        <span>Exportar reporte en PDF</span>
+                    </label>
+
+                    <input type="radio" id="excel_option" name="tipo_reporte" value="excel" hidden>
+                    <label for="excel_option" class="opcion_visual">
+                        <img src="{{ url_for('static', filename='img/exportation/excel_icon.svg') }}" alt="Reporte Detallado" />
+                        <span>Exportar reporte en Excel</span>
+                    </label>
+                </div>
+
+                <div class="configuration_form_detalle">
+                    <h2>Configuración de Detalle</h2>
                     <span>Elige el nivel de detalle del reporte</span>
                     <select>
                         <option>Selecciona algun valor</option>

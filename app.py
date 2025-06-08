@@ -169,7 +169,10 @@ def exportar_resultados_view():
 
     return render_template('exportation/exportation.html')
 
+@app.route("/reporte",methods=['GET'])
+def reporte_view():
 
+    return render_template('report/report.html')
 
 @app.route("/exportar-excel", methods=["POST"])
 def exportar_excel():

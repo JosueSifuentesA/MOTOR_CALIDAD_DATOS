@@ -178,18 +178,18 @@ h2{
     width: 50%;
 }
 
-.configuration_form_exportation{
+.configuration_form_detalle{
   display: flex;
   flex-flow: column;
   gap: 10px;
   padding: 10px 0px;
 }
 
-.configuration_form_exportation span{
+.configuration_form_detalle span{
   color: var(--font_secondary_color);
 }
 
-.configuration_form_exportation h2{
+.configuration_form_detalle h2{
   margin: 0px;
   color: white;
 }
@@ -227,6 +227,101 @@ h2{
   cursor: pointer;
 }
 
+
+.configuration_form_exportation{
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+  padding: 10px 0px;
+}
+
+.configuration_form_exportation span{
+  color: var(--font_secondary_color);
+}
+
+.configuration_form_exportation h2{
+  margin: 0px;
+  color: white;
+}
+
+.configuration_form_exportation{
+  width: 50%;
+}
+
+.opcion_visual{
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+  background-color: var(--background_sidebar_color);
+  width: 150px;
+  align-items: center;
+  text-align: center;
+  border-radius: 5px;
+  padding: 10px;
+  color: var(--font_color);
+}
+
+.opcion_visual img{
+  width: 50px;
+  filter: invert(96%) sepia(0%) saturate(0%) hue-rotate(200deg) brightness(93%) contrast(89%);
+}
+
+.opcion_visual:hover {
+    cursor: pointer;
+    border: 2px solid var(--background_sidebar_option_selected);
+}
+
+
+
+input[type="radio"]:checked + label.opcion_visual {
+  border: 2px solid var(--background_sidebar_option_selected); /* Borde azul o el que uses en tu diseño */
+  box-shadow: 0 0 8px rgba(26, 115, 232, 0.5); /* Efecto de foco */
+  transition: all 0.3s ease;
+}
+
+.Configuration_exportation_options_handler{
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  padding: 10px 0px;
+  gap: 15px;
+}
+
+.Configuration_form_exportation h2{
+  color: white;
+  margin: 0px;
+}
+
+.Configuration_form_exportation{
+  gap: 10px;
+  color: #d9d9d9;
+}
+
+.configuration_form_text_input_handler{
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+  padding: 10px 0px;
+  color: var(--font_color);
+}
+
+.configuration_form_text_input_handler input{
+  color: white;
+  padding: 10px;
+  border: none;
+  background-color: var(--background_sidebar_color);
+}
+
+.criterio_option_exportation_container:hover {
+    cursor: pointer;
+    border: 2px solid var(--background_sidebar_option_selected);
+}
+
+input[type="checkbox"]:checked + .criterio_option_exportation_container {
+    border: 2px solid var(--background_sidebar_option_selected); /* Borde azul o el que uses en tu diseño */
+    box-shadow: 0 0 8px rgba(26, 115, 232, 0.5); /* Efecto de foco */
+    transition: all 0.3s ease;
+}
 
 @font-face {
     font-family: 'Poppins';
