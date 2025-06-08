@@ -92,10 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const criterios = Array.from(document.querySelectorAll(".criterio_option_exportation_container_handler label.seleccionado"))
                               .map(label => label.querySelector("span")?.textContent.trim() || label.textContent.trim());
 
-        const metadatos = Array.from(document.querySelectorAll(".metadata_option_exportation_container.seleccionado"))
-                               .map(div => div.textContent.trim());
+        const metadatos = Array.from(document.querySelectorAll('input[name="metadatos"]:checked')).map(el => el.value);
 
-        const detalle = document.querySelector(".variable_option_exportation_container.seleccionado")?.textContent.trim() || null;
+        // Obtener nivel de detalle
+        const nivel_detalle = document.querySelector('#nivel_detalle').value;
 
         const tipoReporte = document.querySelector("input[name='tipo_reporte']:checked")?.value || null;
         const nombreArchivo = document.querySelector("input[name='file_name']")?.value || "";
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const datosExportacion = {
             criterios: criterios,
             metadatos: metadatos,
-            nivel_detalle: detalle,
+            nivel_detalle: nivel_detalle,
             tipo_reporte: tipoReporte,
             nombre_archivo: nombreArchivo
         };
