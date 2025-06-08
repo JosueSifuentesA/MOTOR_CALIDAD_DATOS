@@ -164,12 +164,12 @@ def evaluar_localstorage():
 
 
 
-@app.route("/exportar_reusultados",methods=['GET'])
+@app.route("/exportacion",methods=['GET'])
 def exportar_resultados_view():
 
     return render_template('exportation/exportation.html')
 
-@app.route("/reporte",methods=['GET'])
+@app.route("/reportes",methods=['GET'])
 def reporte_view():
 
     return render_template('report/report.html')

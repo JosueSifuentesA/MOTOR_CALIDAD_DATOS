@@ -1,60 +1,24 @@
-const pobiData = {
-    completitud: {
-        score: 0.17606837606837608,
-        detalle: {
-            TC_CODTARJETA: 1,
-            TC_PERFIL_IDEAL: 0.7692307692307692,
-            TC_PLASTICO: 0.8717948717948718
-        }
-    },
-    consistencia: {
-        score: 0.0019438290676195413,
-        detalle: {
-            TC_CODTARJETA: -0.01838941606514921,
-            TC_INTERES: 0.16556720847248077
-        }
-    },
-    exactitud: {
-        score: 0.1,
-        detalle: {
-            TC_INTERES: 1,
-            TC_PERFIL_IDEAL: 1,
-            TC_PLASTICO: 1,
-            TC_SALDOPROM_COMPRAS: 1,
-            TC_SALDO_A: 1
-        }
-    },
-    usabilidad: {
-        score: 0.25897435897435894,
-        detalle: {
-            TC_CODTARJETA: 1,
-            TC_INTERES: 0.7692307692307692,
-            TC_PLASTICO: 0.8717948717948718
-        }
-    },
-    score_final: 0.537
-};
-
+const pobiData = JSON.parse(localStorage.getItem('resultado_evaluacion'));
 document.getElementById("scoreFinal").textContent = (pobiData.score_final * 100).toFixed(1) + "%";
 
 // Radar Chart con fondo oscuro
 const radarCtx = document.getElementById("radarChart").getContext("2d");
-
-// Fondo del canvas
 radarCtx.canvas.parentNode.style.backgroundColor = "#1D1C1C";
+
+// Detectar criterios dinámicamente, excluyendo score_final
+const criterios = Object.keys(pobiData).filter(key => key !== "score_final");
+
+// Etiquetas y datos del radar chart
+const radarLabels = criterios.map(key => key.charAt(0).toUpperCase() + key.slice(1));
+const radarScores = criterios.map(key => pobiData[key].score || 0);
 
 new Chart(radarCtx, {
     type: 'radar',
     data: {
-        labels: ['Completitud', 'Consistencia', 'Exactitud', 'Usabilidad'],
+        labels: radarLabels,
         datasets: [{
             label: 'Score por Dimensión',
-            data: [
-                pobiData.completitud.score,
-                pobiData.consistencia.score,
-                pobiData.exactitud.score,
-                pobiData.usabilidad.score
-            ],
+            data: radarScores,
             backgroundColor: '#4F95F2',
             borderColor: '#4f5af2',
             borderWidth: 2,
@@ -93,12 +57,11 @@ new Chart(radarCtx, {
     }
 });
 
-
 const detalleContainer = document.getElementById("detalleContainer");
 
 function createDetalleTable(nombre, detalle) {
     const section = document.createElement("div");
-    section.innerHTML = `<h3>${nombre}</h3>`;
+    section.innerHTML = `<h3>${nombre.charAt(0).toUpperCase() + nombre.slice(1)}</h3>`;
     
     const table = document.createElement("table");
     table.innerHTML = `
@@ -109,7 +72,7 @@ function createDetalleTable(nombre, detalle) {
             ${Object.entries(detalle).map(([campo, valor]) => `
                 <tr>
                     <td>${campo}</td>
-                    <td>${valor.toFixed(3) * 100} %</td>
+                    <td>${(valor * 100).toFixed(1)}%</td>
                     <td><div class="bar" style="width:${Math.max(0, valor) * 100}%;"></div></td>
                 </tr>
             `).join('')}
@@ -119,6 +82,10 @@ function createDetalleTable(nombre, detalle) {
     detalleContainer.appendChild(section);
 }
 
-['completitud', 'consistencia', 'exactitud', 'usabilidad'].forEach(dim => {
-    createDetalleTable(dim, pobiData[dim].detalle);
+// Generar tablas dinámicamente solo si el criterio tiene detalle
+criterios.forEach(dim => {
+    if (pobiData[dim].detalle) {
+        createDetalleTable(dim, pobiData[dim].detalle);
+    }
 });
+
