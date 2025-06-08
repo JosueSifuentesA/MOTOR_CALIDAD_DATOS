@@ -1,108 +1,104 @@
-import pandas as pd
-import numpy as np
+import os
 from datetime import datetime
-import logging
-import math
-import traceback
 from openpyxl import Workbook
-from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
-from datetime import datetime
+from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.utils import get_column_letter
 
-def generar_reporte_excel(resultados_dict, opciones, ruta_salida="reporte_evaluacion.xlsx"):
+def generar_reporte_excel(data: dict, ruta_salida: str = "./reportes") -> str:
+    """
+    Genera un archivo Excel presentable a partir de los datos de evaluación de calidad.
+
+    Args:
+        data (dict): JSON con la estructura de `dataFormulario` y `resultadoEvaluacion`.
+        ruta_salida (str): Ruta donde se guardará el Excel. Por defecto es './reportes'.
+
+    Returns:
+        str: Ruta completa del archivo generado.
+    """
+    # Crear carpeta si no existe
+    os.makedirs(ruta_salida, exist_ok=True)
+
     wb = Workbook()
     ws = wb.active
-    ws.title = "Evaluación de Calidad"
+    ws.title = "Reporte Calidad"
 
     # Estilos
+    color_primario = "4F95F2"
+    header_fill = PatternFill(start_color=color_primario, end_color=color_primario, fill_type="solid")
     header_font = Font(bold=True, color="FFFFFF")
     center_align = Alignment(horizontal="center")
-    fill_header = PatternFill("solid", fgColor="4F81BD")
-    fill_criterio = PatternFill("solid", fgColor="D9E1F2")
-    thin_border = Border(left=Side(style='thin'), right=Side(style='thin'),
-                         top=Side(style='thin'), bottom=Side(style='thin'))
 
-    fila = 1
-    ws.merge_cells(start_row=fila, start_column=1, end_row=fila, end_column=3)
-    ws.cell(row=fila, column=1, value="🧪 REPORTE DE CALIDAD DE DATOS").font = Font(size=14, bold=True)
-    ws.cell(row=fila, column=1).alignment = center_align
-    fila += 2
+    # Título
+    ws.append(["Reporte de Calidad de Datos"])
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=5)
+    ws["A1"].font = Font(size=14, bold=True, color=color_primario)
+    ws["A1"].alignment = center_align
+
+    ws.append([])  # Espacio
 
     # Metadatos
-    metadatos = opciones.get("metadatos", {})
-    if metadatos.get("fecha", False):
-        ws.cell(row=fila, column=1, value="📅 Fecha de evaluación:")
-        ws.cell(row=fila, column=2, value=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        fila += 1
-    if metadatos.get("base_datos"):
-        ws.cell(row=fila, column=1, value="🗃️ Base de datos:")
-        ws.cell(row=fila, column=2, value=metadatos["base_datos"])
-        fila += 1
-    if metadatos.get("usuario"):
-        ws.cell(row=fila, column=1, value="👤 Usuario evaluado:")
-        ws.cell(row=fila, column=2, value=metadatos["usuario"])
-        fila += 1
-    if metadatos.get("evaluador"):
-        ws.cell(row=fila, column=1, value="🔍 Evaluador:")
-        ws.cell(row=fila, column=2, value=metadatos["evaluador"])
-        fila += 1
-    if metadatos.get("observaciones"):
-        ws.cell(row=fila, column=1, value="📝 Observaciones:")
-        ws.cell(row=fila, column=2, value=metadatos["observaciones"])
-        fila += 1
+    data_formulario = data.get("dataFormulario", {})
+    ws.append(["Criterios:", ", ".join(data_formulario.get("criterios", []))])
+    ws.append(["Nivel de Detalle:", data_formulario.get("nivel_detalle", "")])
+    ws.append(["Tipo de Reporte:", data_formulario.get("tipo_reporte", "")])
+    ws.append(["Fecha de Generación:", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
+    ws.append([])
 
-    fila += 2
+    # Resumen general
+    ws.append(["Resumen de Scores"])
+    ws[f"A{ws.max_row}"].font = Font(size=12, bold=True, color=color_primario)
+    ws.append(["Criterio", "Score"])
+    for cell in ws[ws.max_row]:
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = center_align
 
-    # Opciones de inclusión
-    incluir = opciones.get("incluir", {})
-    mostrar_detalle = opciones.get("detalle", "por_variable")
+    evaluacion = data.get("resultadoEvaluacion", {})
+    for criterio, valores in evaluacion.items():
+        if criterio != "score_final":
+            score = round(valores.get("score", 0), 4)
+            ws.append([criterio.capitalize(), score])
 
-    for criterio, info in resultados_dict.items():
-        if criterio == "score_final" and not incluir.get("score_final", False):
-            continue
-        if criterio != "score_final" and not incluir.get(criterio, False):
+    # Score final
+    ws.append([])
+    ws.append(["Score Final", round(evaluacion.get("score_final", 0), 4)])
+    ws[f"A{ws.max_row}"].font = Font(bold=True, color=color_primario)
+
+    # Detalle por criterio
+    for criterio, valores in evaluacion.items():
+        if criterio == "score_final":
             continue
 
-        ws.merge_cells(start_row=fila, start_column=1, end_row=fila, end_column=3)
-        score_pct = info if criterio == "score_final" else info["score"]
-        celda = ws.cell(row=fila, column=1, value=f"🧠 {criterio.upper()} - Score: {round(score_pct * 100, 2)}%")
-        celda.font = Font(bold=True)
-        celda.fill = fill_criterio
-        celda.alignment = center_align
-        fila += 1
+        ws.append([])
+        ws.append([f"Detalle: {criterio.capitalize()}"])
+        ws[f"A{ws.max_row}"].font = Font(size=12, bold=True, color=color_primario)
 
-        if criterio != "score_final" and mostrar_detalle == "por_variable":
-            # Headers
-            ws.cell(row=fila, column=1, value="Campo").font = header_font
-            ws.cell(row=fila, column=2, value="Score (%)").font = header_font
-            ws.cell(row=fila, column=1).fill = fill_header
-            ws.cell(row=fila, column=2).fill = fill_header
-            ws.cell(row=fila, column=1).alignment = center_align
-            ws.cell(row=fila, column=2).alignment = center_align
-            ws.cell(row=fila, column=1).border = thin_border
-            ws.cell(row=fila, column=2).border = thin_border
-            fila += 1
+        ws.append(["Campo", "Score"])
+        for cell in ws[ws.max_row]:
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = center_align
 
-            for campo, valor in info["detalle"].items():
-                ws.cell(row=fila, column=1, value=campo).border = thin_border
-                ws.cell(row=fila, column=2, value=round(valor * 100, 2)).border = thin_border
-                fila += 1
+        detalle = valores.get("detalle", {})
+        for campo, score in detalle.items():
+            ws.append([campo, round(score, 4)])
 
-            fila += 1
+    # Ajustar anchos de columna de forma segura (sin acceder a MergedCell)
+    for i, col in enumerate(ws.columns, start=1):
+        max_length = 0
+        col_letter = get_column_letter(i)
+        for cell in col:
+            try:
+                if cell.value:
+                    max_length = max(max_length, len(str(cell.value)))
+            except:
+                pass  # Evita errores si hay celdas fusionadas
+        ws.column_dimensions[col_letter].width = max_length + 2
 
-    fila += 1
-    if incluir.get("score_final", False):
-        ws.merge_cells(start_row=fila, start_column=1, end_row=fila, end_column=3)
-        celda_final = ws.cell(row=fila, column=1, value=f"🎯 SCORE FINAL: {round(resultados_dict['score_final'] * 100, 2)}%")
-        celda_final.font = Font(size=12, bold=True, color="FFFFFF")
-        celda_final.fill = PatternFill("solid", fgColor="4472C4")
-        celda_final.alignment = center_align
+    # Guardar archivo
+    nombre_archivo = data_formulario.get("nombre_archivo", "reporte_calidad") + ".xlsx"
+    ruta_completa = os.path.join(ruta_salida, nombre_archivo)
+    wb.save(ruta_completa)
 
-    # Ajustes finales
-    ws.column_dimensions["A"].width = 35
-    ws.column_dimensions["B"].width = 18
-
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    ruta_final = ruta_salida.replace(".xlsx", f"_{timestamp}.xlsx")
-    wb.save(ruta_final)
-    return ruta_final
+    return ruta_completa
 

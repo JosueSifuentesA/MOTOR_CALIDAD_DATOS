@@ -115,6 +115,31 @@ document.addEventListener("DOMContentLoaded", () => {
             resultadoEvaluacion : resultado_evaluacion
         }
 
+        fetch('/exportar_evaluacion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataExportacion)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Error en la respuesta del servidor");
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "reporte_calidad.xlsx"; // o cualquier nombre que pongas en el backend
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        })
+        .catch(err => console.error("Error enviando evaluación:", err));
+
+
 
         console.log("Opciones seleccionadas:", JSON.stringify(dataExportacion, null, 2));
     });

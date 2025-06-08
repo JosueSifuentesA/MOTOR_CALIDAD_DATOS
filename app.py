@@ -2,7 +2,8 @@ from flask import Flask, render_template, request,jsonify
 from src.db.db_connector import get_db_connection,extract_table_data
 from src.services.profiler import profile_table_data,list_all_tables,get_table_info
 from src.services.consistencia_service import procesar_datos
-from src.services.evaluacion_calidad_service import evaluar_matriz_personalizada 
+from src.services.evaluacion_calidad_service import evaluar_matriz_personalizada
+from src.services.exportation_service import generar_reporte_excel
 import pandas as pd
 import traceback
 from flask import Flask, request, jsonify, send_file
@@ -174,74 +175,26 @@ def reporte_view():
 
     return render_template('report/report.html')
 
-@app.route("/exportar-excel", methods=["POST"])
-def exportar_excel():
-    try:
-        data = request.get_json()
+@app.route('/exportar_evaluacion', methods=['POST'])
+def generar_reporte():
+    payload = request.get_json()
+    if not payload:
+        return jsonify({"error": "No JSON recibido"}), 400
 
-        resultado_json = data.get("data", {})
-        criterios = data.get("criterios", [])  # ej: ["completitud", "consistencia"]
-        detalle = data.get("detalle", "resumen")  # "resumen" o "variable"
-        metadatos = data.get("metadatos", [])  # ["fecha", "usuario", "motor"]
-        usuario = data.get("usuario", "Desconocido")
-        motor = data.get("motor", "No especificado")
+    # Genera el Excel y devuelve la ruta
+    ruta_archivo = generar_reporte_excel(payload, ruta_salida='./reportes')
 
-        if not resultado_json or not criterios:
-            return jsonify({"error": "Faltan datos o criterios para exportar"}), 400
+    # Asegúrate de que el archivo exista
+    if not os.path.exists(ruta_archivo):
+        return jsonify({"error": "No se pudo generar el reporte"}), 500
 
-        # Generar DataFrame según detalle
-        if detalle == "resumen":
-            rows = []
-            for criterio in criterios:
-                if criterio in resultado_json:
-                    score = resultado_json[criterio].get("score")
-                    rows.append({"Criterio": criterio, "Score": round(score, 4)})
-            df_export = pd.DataFrame(rows)
-
-        elif detalle == "variable":
-            rows = []
-            for criterio in criterios:
-                if criterio in resultado_json:
-                    detalle_criterio = resultado_json[criterio].get("detalle", {})
-                    for variable, valor in detalle_criterio.items():
-                        rows.append({
-                            "Criterio": criterio,
-                            "Variable": variable,
-                            "Valor": round(valor, 4)
-                        })
-            df_export = pd.DataFrame(rows)
-
-        else:
-            return jsonify({"error": "Tipo de detalle no válido"}), 400
-
-        # Crear Excel en memoria
-        output = BytesIO()
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            df_export.to_excel(writer, sheet_name='Evaluación', index=False)
-
-            # Agregar metadatos si se pidieron
-            metadatos_data = []
-            if "fecha" in metadatos:
-                metadatos_data.append(["Fecha de Evaluación", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
-            if "usuario" in metadatos:
-                metadatos_data.append(["Usuario", usuario])
-            if "motor" in metadatos:
-                metadatos_data.append(["Motor BD", motor])
-
-            if metadatos_data:
-                df_meta = pd.DataFrame(metadatos_data, columns=["Campo", "Valor"])
-                df_meta.to_excel(writer, sheet_name='Metadatos', index=False)
-
-        output.seek(0)
-        return send_file(output, download_name="reporte_calidad.xlsx", as_attachment=True)
-
-    except Exception as e:
-        traceback.print_exc()
-        return jsonify({"success": False, "error": f"Error exportando el Excel: {str(e)}"}), 500
-
-
-
-
+    # Envía el archivo al cliente
+    return send_file(
+        ruta_archivo,
+        as_attachment=True,
+        download_name=os.path.basename(ruta_archivo),
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
