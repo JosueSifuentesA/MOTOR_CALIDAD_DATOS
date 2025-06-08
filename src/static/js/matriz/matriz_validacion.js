@@ -67,7 +67,8 @@ document.getElementById("ejecutar_evaluacion").addEventListener("click", async f
         }
 
         localStorage.setItem("resultado_evaluacion", JSON.stringify(resultado));
-
+        window.location.href = "/reportes";
+        /*
         const popupContent = document.getElementById("popup-content");
         popupContent.innerHTML = "";
         for (const [criterio, info] of Object.entries(resultado)) {
@@ -92,6 +93,8 @@ document.getElementById("ejecutar_evaluacion").addEventListener("click", async f
         popupContent.appendChild(total);
 
         document.getElementById("popup-overlay").classList.remove("hidden");
+
+        */
 
     } catch (err) {
         console.log(err)

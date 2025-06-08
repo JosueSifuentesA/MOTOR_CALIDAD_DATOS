@@ -89,3 +89,6 @@ criterios.forEach(dim => {
     }
 });
 
+document.getElementById("btn_continue").addEventListener("click", function() {
+    window.location.href = "/exportacion";
+});
