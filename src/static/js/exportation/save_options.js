@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const tipoReporte = document.querySelector("input[name='tipo_reporte']:checked")?.value || null;
         const nombreArchivo = document.querySelector("input[name='file_name']")?.value || "";
 
-        const datosExportacion = {
+        const datosFormulario = {
             criterios: criterios,
             metadatos: metadatos,
             nivel_detalle: nivel_detalle,
@@ -108,7 +108,15 @@ document.addEventListener("DOMContentLoaded", () => {
             nombre_archivo: nombreArchivo
         };
 
-        console.log("Opciones seleccionadas:", JSON.stringify(datosExportacion, null, 2));
+        const resultado_evaluacion = JSON.parse(localStorage.getItem("resultado_evaluacion"));
+
+        const dataExportacion = {
+            dataFormulario : datosFormulario,
+            resultadoEvaluacion : resultado_evaluacion
+        }
+
+
+        console.log("Opciones seleccionadas:", JSON.stringify(dataExportacion, null, 2));
     });
 });
 
