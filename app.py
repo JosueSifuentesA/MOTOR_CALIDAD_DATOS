@@ -3,7 +3,7 @@ from src.db.db_connector import get_db_connection,extract_table_data
 from src.services.profiler import profile_table_data,list_all_tables,get_table_info
 from src.services.consistencia_service import procesar_datos
 from src.services.evaluacion_calidad_service import evaluar_matriz_personalizada
-from src.services.exportation_service import generar_reporte_excel
+from src.services.exportation_service import generar_reporte_excel,export_html_to_pdf_via_http
 import pandas as pd
 import traceback
 from flask import Flask, request, jsonify, send_file
@@ -11,7 +11,12 @@ import pandas as pd
 from io import BytesIO
 from datetime import datetime
 import traceback
-
+from pathlib import Path
+from flask import Flask, request, render_template, send_file, jsonify
+from pathlib import Path
+from playwright.sync_api import sync_playwright
+import os
+import uuid
 
 
 from flask_cors import CORS
@@ -176,7 +181,7 @@ def reporte_view():
     return render_template('report/report.html')
 
 @app.route('/exportar_evaluacion', methods=['POST'])
-def generar_reporte():
+def generar_reporte_excel():
     payload = request.get_json()
     if not payload:
         return jsonify({"error": "No JSON recibido"}), 400
@@ -195,6 +200,48 @@ def generar_reporte():
         download_name=os.path.basename(ruta_archivo),
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
+
+@app.route("/exportar_pdf", methods=["POST"])
+def generar_reporte_pdf():
+    datos = request.get_json()
+
+    if not datos or "dataFormulario" not in datos or "resultadoEvaluacion" not in datos:
+        return jsonify({"error": "JSON inválido"}), 400
+
+    dataFormulario = datos["dataFormulario"]
+    resultadoEvaluacion = datos["resultadoEvaluacion"]
+
+    # Renderizamos el template con los datos recibidos
+    rendered_html = render_template(
+        "report/pdf_report.html",
+        dataFormulario=dataFormulario,
+        resultadoEvaluacion=resultadoEvaluacion
+    )
+
+    # Carpeta de salida del PDF
+    output_folder = Path("output")
+    output_folder.mkdir(exist_ok=True)
+
+    # Guardamos el HTML temporalmente en src/static/temp/
+    temp_filename = f"{uuid.uuid4().hex}.html"
+    temp_html_path = Path("src") / "static" / "temp" / temp_filename
+    temp_html_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(temp_html_path, "w", encoding="utf-8") as f:
+        f.write(rendered_html)
+
+    # Generamos el PDF usando Playwright accediendo por HTTP
+    output_pdf_path = output_folder / (dataFormulario.get("nombre_archivo", "reporte") + ".pdf")
+    export_html_to_pdf_via_http(temp_filename, output_pdf_path)  # ⚠️ Usamos solo el nombre
+
+    # Eliminamos el HTML temporal
+    os.remove(temp_html_path)
+
+    return send_file(output_pdf_path, as_attachment=True)
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

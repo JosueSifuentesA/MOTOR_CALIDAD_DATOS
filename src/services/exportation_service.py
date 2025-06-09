@@ -1,21 +1,22 @@
 import os
-from datetime import datetime
+import re
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
+from datetime import datetime
+from pathlib import Path
+from playwright.sync_api import sync_playwright
+import time
+
+def limpiar_nombre(nombre):
+    
+    return re.sub(r'[^A-Za-z0-9_-]', '', nombre) or "reporte"
 
 def generar_reporte_excel(data: dict, ruta_salida: str = "./reportes") -> str:
     """
     Genera un archivo Excel presentable a partir de los datos de evaluación de calidad.
-
-    Args:
-        data (dict): JSON con la estructura de `dataFormulario` y `resultadoEvaluacion`.
-        ruta_salida (str): Ruta donde se guardará el Excel. Por defecto es './reportes'.
-
-    Returns:
-        str: Ruta completa del archivo generado.
+    Solo incluye los criterios seleccionados.
     """
-    # Crear carpeta si no existe
     os.makedirs(ruta_salida, exist_ok=True)
 
     wb = Workbook()
@@ -38,7 +39,9 @@ def generar_reporte_excel(data: dict, ruta_salida: str = "./reportes") -> str:
 
     # Metadatos
     data_formulario = data.get("dataFormulario", {})
-    ws.append(["Criterios:", ", ".join(data_formulario.get("criterios", []))])
+    criterios_seleccionados = data_formulario.get("criterios", [])
+
+    ws.append(["Criterios:", ", ".join(criterios_seleccionados)])
     ws.append(["Nivel de Detalle:", data_formulario.get("nivel_detalle", "")])
     ws.append(["Tipo de Reporte:", data_formulario.get("tipo_reporte", "")])
     ws.append(["Fecha de Generación:", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
@@ -54,10 +57,11 @@ def generar_reporte_excel(data: dict, ruta_salida: str = "./reportes") -> str:
         cell.alignment = center_align
 
     evaluacion = data.get("resultadoEvaluacion", {})
-    for criterio, valores in evaluacion.items():
-        if criterio != "score_final":
-            score = round(valores.get("score", 0), 4)
-            ws.append([criterio.capitalize(), score])
+    for criterio in criterios_seleccionados:
+        clave = criterio.lower()
+        if clave in evaluacion:
+            score = round(evaluacion[clave].get("score", 0), 4)
+            ws.append([criterio, score])
 
     # Score final
     ws.append([])
@@ -65,12 +69,13 @@ def generar_reporte_excel(data: dict, ruta_salida: str = "./reportes") -> str:
     ws[f"A{ws.max_row}"].font = Font(bold=True, color=color_primario)
 
     # Detalle por criterio
-    for criterio, valores in evaluacion.items():
-        if criterio == "score_final":
+    for criterio in criterios_seleccionados:
+        clave = criterio.lower()
+        if clave not in evaluacion:
             continue
 
         ws.append([])
-        ws.append([f"Detalle: {criterio.capitalize()}"])
+        ws.append([f"Detalle: {criterio}"])
         ws[f"A{ws.max_row}"].font = Font(size=12, bold=True, color=color_primario)
 
         ws.append(["Campo", "Score"])
@@ -79,11 +84,11 @@ def generar_reporte_excel(data: dict, ruta_salida: str = "./reportes") -> str:
             cell.font = header_font
             cell.alignment = center_align
 
-        detalle = valores.get("detalle", {})
+        detalle = evaluacion[clave].get("detalle", {})
         for campo, score in detalle.items():
             ws.append([campo, round(score, 4)])
 
-    # Ajustar anchos de columna de forma segura (sin acceder a MergedCell)
+    # Ajustar anchos
     for i, col in enumerate(ws.columns, start=1):
         max_length = 0
         col_letter = get_column_letter(i)
@@ -92,13 +97,27 @@ def generar_reporte_excel(data: dict, ruta_salida: str = "./reportes") -> str:
                 if cell.value:
                     max_length = max(max_length, len(str(cell.value)))
             except:
-                pass  # Evita errores si hay celdas fusionadas
+                pass
         ws.column_dimensions[col_letter].width = max_length + 2
 
-    # Guardar archivo
-    nombre_archivo = data_formulario.get("nombre_archivo", "reporte_calidad") + ".xlsx"
-    ruta_completa = os.path.join(ruta_salida, nombre_archivo)
+    # Guardar
+    nombre_base = limpiar_nombre(data_formulario.get("nombre_archivo", "reporte_calidad"))
+    ruta_completa = os.path.join(ruta_salida, f"{nombre_base}.xlsx")
     wb.save(ruta_completa)
 
     return ruta_completa
+
+def export_html_to_pdf_via_http(temp_filename, pdf_output_path):
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page()
+
+        # Ahora usamos la ruta correcta del HTML generado en src/static/temp/
+        page.goto(f"http://localhost:5000/static/temp/{temp_filename}", wait_until="networkidle")
+        page.wait_for_timeout(3000)
+        page.pdf(path=str(pdf_output_path), format="A4", print_background=True)
+        browser.close()
+
+
+
 

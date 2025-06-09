@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
     restaurarSeleccion("variable_option_exportation_container", "detalle_seleccionado", false);
     restaurarSeleccion("metadata_option_exportation_container", "metadatos_seleccionados", true);
 
-    // Criterios: inputs checkbox dentro de contenedor _handler
     document.querySelectorAll(".criterio_option_exportation_container_handler input[type='checkbox']").forEach(input => {
         input.addEventListener("change", () => {
             const label = document.querySelector(`label[for="${input.id}"]`);
@@ -16,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Variables (igual que antes)
     document.querySelectorAll(".variable_option_exportation_container").forEach(div => {
         div.addEventListener("click", () => {
             document.querySelectorAll(".variable_option_exportation_container").forEach(d => d.classList.remove("seleccionado"));
@@ -25,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Metadatos (igual que antes)
     document.querySelectorAll(".metadata_option_exportation_container").forEach(div => {
         div.addEventListener("click", () => {
             div.classList.toggle("seleccionado");
@@ -35,14 +32,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function guardarSeleccion(clase, storageKey, multiple) {
         if(clase === "criterio_option_exportation_container_handler"){
-            // Guardar criterios desde los labels que tengan la clase seleccionado dentro del handler
+
             const seleccionados = Array.from(document.querySelectorAll(`.${clase} label.seleccionado`)).map(label => {
                 const span = label.querySelector("span");
                 return span ? span.textContent.trim() : label.textContent.trim();
             });
             localStorage.setItem(storageKey, multiple ? JSON.stringify(seleccionados) : (seleccionados[0] || ""));
         } else {
-            // Variables y Metadatos
+
             const seleccionados = Array.from(document.querySelectorAll(`.${clase}.seleccionado`)).map(div => {
                 const span = div.querySelector("span");
                 return span ? span.textContent.trim() : div.textContent.trim();
@@ -74,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         } else {
-            // Restaurar variables y metadatos
+
             document.querySelectorAll(`.${clase}`).forEach(div => {
                 const span = div.querySelector("span");
                 const texto = span ? span.textContent.trim() : div.textContent.trim();
@@ -87,14 +84,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // BOTÓN DE EXPORTACIÓN
     document.getElementById("ejecutar_exportacion")?.addEventListener("click", () => {
         const criterios = Array.from(document.querySelectorAll(".criterio_option_exportation_container_handler label.seleccionado"))
                               .map(label => label.querySelector("span")?.textContent.trim() || label.textContent.trim());
 
         const metadatos = Array.from(document.querySelectorAll('input[name="metadatos"]:checked')).map(el => el.value);
 
-        // Obtener nivel de detalle
+
         const nivel_detalle = document.querySelector('#nivel_detalle').value;
 
         const tipoReporte = document.querySelector("input[name='tipo_reporte']:checked")?.value || null;
@@ -110,36 +106,71 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const resultado_evaluacion = JSON.parse(localStorage.getItem("resultado_evaluacion"));
 
+        function limpiarNombreArchivo(nombre) {
+            return nombre.replace(/[^a-zA-Z0-9_-]/g, '') || 'reporte';
+        }
+
+
         const dataExportacion = {
             dataFormulario : datosFormulario,
             resultadoEvaluacion : resultado_evaluacion
         }
 
-        fetch('/exportar_evaluacion', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(dataExportacion)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Error en la respuesta del servidor");
-            }
-            return response.blob();
-        })
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "reporte_calidad.xlsx"; // o cualquier nombre que pongas en el backend
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-        })
-        .catch(err => console.error("Error enviando evaluación:", err));
 
+        const nombreLimpio = limpiarNombreArchivo(dataExportacion.dataFormulario.nombre_archivo)
 
+        if (dataExportacion.dataFormulario.tipo_reporte === "excel"){
+            fetch('/exportar_evaluacion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dataExportacion)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download =  `${nombreLimpio}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            })
+            .catch(err => console.error("Error enviando evaluación:", err));
+
+        }else if (dataExportacion.dataFormulario.tipo_reporte === "pdf"){
+
+            fetch('/exportar_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dataExportacion)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download =  `${nombreLimpio}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            })
+            .catch(err => console.error("Error enviando evaluación:", err));
+
+        }
 
         console.log("Opciones seleccionadas:", JSON.stringify(dataExportacion, null, 2));
     });

@@ -58,15 +58,15 @@ def get_table_info(connection, table_name):
     try:
         cursor = connection.cursor()
 
-        # Obtener el número de filas
+
         cursor.execute(f"SELECT COUNT(*) FROM {table_name.upper()}")
         num_rows = cursor.fetchone()[0]
 
-        # Obtener el número de columnas
+
         cursor.execute(f"SELECT * FROM {table_name.upper()} WHERE 1=0")
         num_columns = len(cursor.description)
 
-        # Devolver los resultados
+
         return {
             "nombre_tabla": table_name.upper(),
             "numero_filas": num_rows,
@@ -81,23 +81,23 @@ def get_table_info(connection, table_name):
 
 
 def list_all_tables(connection, db_type):
-    """Obtiene el nombre de la tabla, número de columnas y filas."""
+
     tables_info = []
     tables = get_tables(connection, db_type)
     
     for table in tables:
-        # Obtener el número de columnas de la tabla
+
         cursor = connection.cursor()
-        cursor.execute(f"SELECT * FROM {table} WHERE 1=0")  # No devuelve filas, solo columnas
+        cursor.execute(f"SELECT * FROM {table} WHERE 1=0")  
         columns = [desc[0] for desc in cursor.description]
         num_columns = len(columns)
         
-        # Obtener el número de filas de la tabla
+
         cursor.execute(f"SELECT COUNT(*) FROM {table}")
         num_rows = cursor.fetchone()[0]
         cursor.close()
 
-        # Agregar los datos a la lista
+
         tables_info.append({
             'name': table,
             'num_columns': num_columns,
