@@ -181,7 +181,7 @@ def reporte_view():
     return render_template('report/report.html')
 
 @app.route('/exportar_evaluacion', methods=['POST'])
-def generar_reporte_excel():
+def generar_reporte_excel_endpoint():
     payload = request.get_json()
     if not payload:
         return jsonify({"error": "No JSON recibido"}), 400

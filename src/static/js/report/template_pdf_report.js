@@ -77,15 +77,19 @@ function createDetalleTable(nombre, detalle) {
                 </tr>
             `).join('')}
         </tbody>
-        <div class="page-break"></div>
     `;
     section.appendChild(table);
     detalleContainer.appendChild(section);
 }
 
-// Generar tablas dinámicamente solo si el criterio tiene detalle
-criterios.forEach(dim => {
+// Generar tablas con salto cada 3 tablas
+criterios.forEach((dim, i) => {
     if (pobiData[dim].detalle) {
         createDetalleTable(dim, pobiData[dim].detalle);
+        if ((i + 1) % 3 === 0) {
+            const pageBreak = document.createElement("div");
+            pageBreak.className = "page-break";
+            detalleContainer.appendChild(pageBreak);
+        }
     }
 });

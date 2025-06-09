@@ -132,7 +132,8 @@ def export_html_to_pdf_via_http(temp_filename, pdf_output_path):
         page.pdf(
             path=str(pdf_output_path),
             format="A4",
-            print_background=True
+            print_background=True,
+            prefer_css_page_size=True
         )
 
         browser.close()

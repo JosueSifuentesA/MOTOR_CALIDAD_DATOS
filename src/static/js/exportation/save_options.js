@@ -111,10 +111,34 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        const dataExportacion = {
-            dataFormulario : datosFormulario,
-            resultadoEvaluacion : resultado_evaluacion
+        const criteriosSeleccionados = datosFormulario.criterios || [];
+
+        const criteriosMapeo = {
+            "Exactitud": "exactitud",
+            "Completitud": "completitud",
+            "Consistencia": "consistencia",
+            "Usabilidad": "usabilidad"
+        };
+
+        // Filtramos resultado_evaluacion solo con los criterios solicitados
+        const resultadoFiltrado = {};
+
+        criteriosSeleccionados.forEach(nombreCriterio => {
+            const clave = criteriosMapeo[nombreCriterio];
+            if (clave && resultado_evaluacion.hasOwnProperty(clave)) {
+                resultadoFiltrado[clave] = resultado_evaluacion[clave];
+            }
+        });
+
+        // Siempre puedes mantener el score final si lo necesitas
+        if (resultado_evaluacion.hasOwnProperty("score_final")) {
+            resultadoFiltrado["score_final"] = resultado_evaluacion["score_final"];
         }
+
+        const dataExportacion = {
+            dataFormulario: datosFormulario,
+            resultadoEvaluacion: resultadoFiltrado
+        };
 
 
         const nombreLimpio = limpiarNombreArchivo(dataExportacion.dataFormulario.nombre_archivo)
