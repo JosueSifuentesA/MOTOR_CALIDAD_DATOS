@@ -77,6 +77,7 @@ function createDetalleTable(nombre, detalle) {
                 </tr>
             `).join('')}
         </tbody>
+        <div class="page-break"></div>
     `;
     section.appendChild(table);
     detalleContainer.appendChild(section);

@@ -108,15 +108,35 @@ def generar_reporte_excel(data: dict, ruta_salida: str = "./reportes") -> str:
     return ruta_completa
 
 def export_html_to_pdf_via_http(temp_filename, pdf_output_path):
+    from playwright.sync_api import sync_playwright
+
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page()
 
-        # Ahora usamos la ruta correcta del HTML generado en src/static/temp/
+        # Cargar el HTML alojado en /static/temp/
         page.goto(f"http://localhost:5000/static/temp/{temp_filename}", wait_until="networkidle")
-        page.wait_for_timeout(3000)
-        page.pdf(path=str(pdf_output_path), format="A4", print_background=True)
+
+        # Esperar que se cargue todo el contenido
+        page.wait_for_timeout(2000)
+
+        # Obtener la altura total del contenido renderizado (en px)
+        height_px = page.evaluate("document.body.scrollHeight")
+        # Convertir a pulgadas
+        height_in = height_px / 96  # 96 px = 1 in
+
+        # Asegurarse que el alto mínimo sea al menos A4 (11.7in)
+        height_in = max(height_in, 11.7)
+
+        # Exportar a PDF con altura dinámica
+        page.pdf(
+            path=str(pdf_output_path),
+            format="A4",
+            print_background=True
+        )
+
         browser.close()
+
 
 
 
