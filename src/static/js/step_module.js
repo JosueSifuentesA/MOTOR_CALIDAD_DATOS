@@ -39,3 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+
+document.getElementById("goverment_option").addEventListener("click", function() {
+    window.location.href = "/gobierno";
+});
+
+//goverment_option

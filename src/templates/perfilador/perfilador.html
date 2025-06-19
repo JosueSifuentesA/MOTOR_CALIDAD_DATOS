@@ -17,48 +17,60 @@
     </header>
     <main>
         <section class="sidebar">
-            <div class="sidebar_option sidebar_option_perfilado">
-                <div class="sidebar_option_iconhandler">
-                    <img loading="eager" src="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}"  alt="icono perfilado"/>
+
+            <div class="step_flow_container">
+                <div class="sidebar_option sidebar_option_perfilado">
+                    <div class="sidebar_option_iconhandler">
+                        <img loading="eager" src="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}"  alt="icono perfilado"/>
+                    </div>
+                    <label>Perfilado de datos</label>
                 </div>
-                <label>Perfilado de datos</label>
-            </div>
 
-            <div class="sidebar_separation_line">
-                <div class="line"></div>
-                <div class="stuff"></div>
-            </div>
-
-            <div class="sidebar_option sidebar_option_matriz">
-                <div class="sidebar_option_iconhandler">
-                    <img loading="eager" src="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}"  alt="icono matriz"/>
+                <div class="sidebar_separation_line">
+                    <div class="line"></div>
+                    <div class="stuff"></div>
                 </div>
-                <label>Matriz de evaluación</label>
-            </div>
 
-            <div class="sidebar_separation_line">
-                <div class="line"></div>
-                <div class="stuff"></div>
-            </div>
-
-            <div class="sidebar_option sidebar_option_reportes">
-                <div class="sidebar_option_iconhandler">
-                    <img loading="eager" src="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}"  alt="icono reportes"/>
+                <div class="sidebar_option sidebar_option_matriz">
+                    <div class="sidebar_option_iconhandler">
+                        <img loading="eager" src="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}"  alt="icono matriz"/>
+                    </div>
+                    <label>Matriz de evaluación</label>
                 </div>
-                <label>Reportes</label>
-            </div>
 
-            <div class="sidebar_separation_line">
-                <div class="line"></div>
-                <div class="stuff"></div>
-            </div>
-
-            <div class="sidebar_option sidebar_option_exportacion">
-                <div class="sidebar_option_iconhandler">
-                    <img loading="eager" src="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}"  alt="icono exportación"/>
+                <div class="sidebar_separation_line">
+                    <div class="line"></div>
+                    <div class="stuff"></div>
                 </div>
-                <label>Opciones de exportación</label>
+
+                <div class="sidebar_option sidebar_option_reportes">
+                    <div class="sidebar_option_iconhandler">
+                        <img loading="eager" src="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}"  alt="icono reportes"/>
+                    </div>
+                    <label>Reportes</label>
+                </div>
+
+                <div class="sidebar_separation_line">
+                    <div class="line"></div>
+                    <div class="stuff"></div>
+                </div>
+                
+                <div class="sidebar_option sidebar_option_exportacion">
+                    <div class="sidebar_option_iconhandler">
+                        <img loading="eager" src="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}"  alt="icono exportación"/>
+                    </div>
+                    <label>Opciones de exportación</label>
+                </div>
+            
             </div>
+
+            <div id="goverment_option" class="sidebar_container_option">
+                <div class="sidebar_img_container">
+                    <img src="{{ url_for('static', filename='img/goverment/left_arrow_icon.svg') }}"/>
+                </div>
+                <label>Gobierno</label>
+            </div>
+
 
         </section>
 
@@ -135,7 +147,8 @@
             const profileTableBody = document.getElementById("profile_table_body");
             const redirectButton = document.getElementById("redirect_button");
             let selectedTableName = null;
-    
+            localStorage.clear()
+
             tableCards.forEach(card => {
                 card.addEventListener("click", function () {
                     selectedTableName = this.getAttribute("data-table-name");

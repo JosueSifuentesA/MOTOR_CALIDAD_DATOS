@@ -74,10 +74,12 @@
         <h1>Qualizer</h1>
     </header>
     <main>
-        <section class="sidebar">
+                <section class="sidebar">
+
+            <div class="step_flow_container">
                 <div class="sidebar_option sidebar_option_perfilado">
                     <div class="sidebar_option_iconhandler">
-                        <img src="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}"  alt="icono perfilado"/>
+                        <img loading="eager" src="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}"  alt="icono perfilado"/>
                     </div>
                     <label>Perfilado de datos</label>
                 </div>
@@ -89,7 +91,7 @@
 
                 <div class="sidebar_option sidebar_option_matriz">
                     <div class="sidebar_option_iconhandler">
-                        <img src="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}"  alt="icono matriz"/>
+                        <img loading="eager" src="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}"  alt="icono matriz"/>
                     </div>
                     <label>Matriz de evaluación</label>
                 </div>
@@ -101,7 +103,7 @@
 
                 <div class="sidebar_option sidebar_option_reportes">
                     <div class="sidebar_option_iconhandler">
-                        <img src="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}"  alt="icono reportes"/>
+                        <img loading="eager" src="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}"  alt="icono reportes"/>
                     </div>
                     <label>Reportes</label>
                 </div>
@@ -110,15 +112,26 @@
                     <div class="line"></div>
                     <div class="stuff"></div>
                 </div>
-
+                
                 <div class="sidebar_option sidebar_option_exportacion">
                     <div class="sidebar_option_iconhandler">
-                        <img src="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}"  alt="icono exportación"/>
+                        <img loading="eager" src="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}"  alt="icono exportación"/>
                     </div>
                     <label>Opciones de exportación</label>
                 </div>
+            
+            </div>
+
+            <div id="goverment_option" class="sidebar_container_option">
+                <div class="sidebar_img_container">
+                    <img src="{{ url_for('static', filename='img/goverment/left_arrow_icon.svg') }}"/>
+                </div>
+                <label>Gobierno</label>
+            </div>
+
 
         </section>
+
 
         <section class="container">
             <div class="score_container scale-up-center">

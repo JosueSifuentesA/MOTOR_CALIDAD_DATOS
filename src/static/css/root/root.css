@@ -42,12 +42,13 @@ h2{
     background-color: var(--background_sidebar_color);
     display: flex;
     flex-flow: column;
-    gap: 10px;
+    /*gap: 10px;*/
     padding: 10px;
     max-width: 180px;
     color: var(--font_color);
     font-family: 'Poppins', sans-serif;
     font-weight: bold;
+    justify-content: space-between;
 
 }
 
@@ -321,6 +322,17 @@ input[type="checkbox"]:checked + .criterio_option_exportation_container {
     border: 2px solid var(--background_sidebar_option_selected); /* Borde azul o el que uses en tu diseño */
     box-shadow: 0 0 8px rgba(26, 115, 232, 0.5); /* Efecto de foco */
     transition: all 0.3s ease;
+}
+
+.sidebar_container_option{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+}
+
+.sidebar_container_option:hover{
+    cursor: pointer;
 }
 
 @font-face {

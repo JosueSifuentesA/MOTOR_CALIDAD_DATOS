@@ -68,9 +68,10 @@
     flex-flow: column;
     color: white;
     gap: 10px;
-    width: 50%;
+    width: 30%;
     border-right: 1px dashed;
     margin-right: 20px;
+    min-width: min-content;
 }
 
 .information_container_description{
@@ -119,4 +120,40 @@
 .columns_container label:hover{
     cursor: pointer;
     background-color: gray;
+}
+
+.detail_element{
+    display: flex;
+    flex-flow: column;
+    padding: 10px 0px;
+}
+
+.detail_element label{
+    color: white;
+    font-weight: bold;
+}
+
+.information_container_details label{
+    font-size: 20px;
+}
+
+.detail_container_handler{
+    border-bottom: 1px dashed grey;
+}
+
+.information_container_details h3{
+    padding-bottom: 10px;
+    border-bottom: 1px dashed grey;
+}
+
+
+.sidebar_container_option{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+}
+
+.sidebar_container_option:hover{
+    cursor: pointer;
 }
