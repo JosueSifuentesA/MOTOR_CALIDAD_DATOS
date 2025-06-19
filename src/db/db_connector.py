@@ -78,3 +78,17 @@ def extract_table_data(connection, table_name):
     except Exception as e:
         raise Exception(f"Error al extraer datos de la tabla '{table_name}': {str(e)}")
 
+
+def get_columns(connection,table_name):
+
+    try:
+        cursor = connection.cursor()
+        query = f'SELECT * FROM "{table_name}" WHERE ROWNUM = 1'
+        cursor.execute(query)
+        columnas = [col[0] for col in cursor.description]
+        cursor.close()
+
+        print(columnas)
+        return columnas
+    except Exception as e:
+        raise Exception(f"Error al extraer datos de la tabla '{table_name}': {str(e)}")

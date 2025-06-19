@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motor de Calidad</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/root/root.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/perfilador/perfilador.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/matriz/matriz.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gobierno/gobierno.css') }}">
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}">
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}">
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}">
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}">
+</head>
+</head>
+<body>
+    <header>
+        <h1>Qualizer</h1>
+    </header>
+    <main>
+        <div id="popup-overlay" class="popup-overlay hidden">
+            <div class="scale-up-center popup">
+                <button class="popup-close" id="popup-close">✖</button>
+                <div id="popup-content">
+                    <!-- Contenido dinámico para cada criterio -->
+                </div>
+            </div>
+        </div>
+        <section class="sidebar">
+            <div class="sidebar_option sidebar_option_perfilado">
+                <div class="sidebar_option_iconhandler">
+                    <img src="{{ url_for('static', filename='img/perfilador/profile_data_icon.svg') }}"  alt="icono perfilado"/>
+                </div>
+                <label>Perfilado de datos</label>
+            </div>
+
+            <div class="sidebar_separation_line">
+                <div class="line"></div>
+                <div class="stuff"></div>
+            </div>
+
+            <div class="sidebar_option sidebar_option_matriz">
+                <div class="sidebar_option_iconhandler">
+                    <img src="{{ url_for('static', filename='img/perfilador/balance_icon.svg') }}"  alt="icono matriz"/>
+                </div>
+                <label>Matriz de evaluación</label>
+            </div>
+
+            <div class="sidebar_separation_line">
+                <div class="line"></div>
+                <div class="stuff"></div>
+            </div>
+
+            <div class="sidebar_option sidebar_option_reportes">
+                <div class="sidebar_option_iconhandler">
+                    <img src="{{ url_for('static', filename='img/perfilador/barchart_icon.svg') }}"  alt="icono reportes"/>
+                </div>
+                <label>Reportes</label>
+            </div>
+
+            <div class="sidebar_separation_line">
+                <div class="line"></div>
+                <div class="stuff"></div>
+            </div>
+
+            <div class="sidebar_option sidebar_option_exportacion">
+                <div class="sidebar_option_iconhandler">
+                    <img src="{{ url_for('static', filename='img/perfilador/export_icon.svg') }}"  alt="icono exportación"/>
+                </div>
+                <label>Opciones de exportación</label>
+            </div>
+
+        </section>
+
+        <section class="container">
+            <section class="container_dbinfo">
+                <div class="container_dbinfo_card">
+                    <div class="dbinfo_card_icon">
+                        <img src="{{ url_for('static', filename='img/perfilador/db_oracle_icon.png') }}" alt="icono_db"/>
+                    </div>
+                    <div class="db_info_card_data">
+                        <label class="container_dbinfo_card_motor">Motor: <span class="db_info_card_value">Oracle XE</span></label>
+                        <label class="container_dbinfo_card_usuario">Usuario: <span class="db_info_card_value">Some1</span></label>
+                        <label class="container_dbinfo_card_version">Versión: <span class="db_info_card_value">V12.03</span></label>
+                    </div>
+                </div>
+            </section>
+        
+            <section class="table_selector_container">
+                <div class="table_selector_header">
+                    <h2 class="container_header">Verificación de Catalogo</h2>
+                    <span>Elige el nivel de detalle del reporte</span>
+                </div>
+                <section class="table_selector_cards_handler">
+                    {% for table_info in tables_info %}
+                    <div class="cards_handler_card scale-up-center" data-table-name="{{ table_info['name'] }}">
+                        <div class="table_icon_handler">
+                            <img src="{{ url_for('static', filename='img/perfilador/table_icon.svg') }}" alt="table_icon"/>
+                        </div>
+                        <div class="card_info">
+                            <div>
+                                <img src="{{ url_for('static', filename='img/perfilador/profiler_square.svg') }}" alt="name_icon"/>
+                                <label>Nombre: <span class="card_info_span">{{ table_info['name'] }}</span></label>
+                            </div>
+                            <div>
+                                <img src="{{ url_for('static', filename='img/perfilador/profiler_column_icon.svg') }}" alt="column_icon"/>
+                                <label>Columnas: <span class="card_info_span">{{ table_info['num_columns'] }}</span></label>
+                            </div>
+                            <div>
+                                <img src="{{ url_for('static', filename='img/perfilador/profiler_row_icon.svg') }}" alt="registro_icon"/>
+                                <label>Registros: <span class="card_info_span">{{ table_info['num_rows'] }}</span></label>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </section>
+            </section>
+
+            <section class="section_catalog">
+                <div id="catalog_detail_container_no_selection" class="catalog_detail_container">
+                    <h2>NO HAY TABLAS SELECCIONADAS</h2>
+                </div>
+
+                <div id="catalog_detail_container_info" class="catalog_detail_container" style="display: none;">
+                    <div class="catalog_column_container">
+                        <h3>Columnas</h3>
+                        <div class="columns_container" id="columns_container"></div>
+                    </div>
+                    <div class="catalog_information_container">
+                        <div class="information_container_description">
+                            <h3>Función:</h3>
+                            <span>Selecciona una columna para ver su descripción.</span>
+                        </div>
+                        <div class="information_container_details">
+                            <h3>Usuarios / Áreas que Consumen esta Columna : </h3>
+                            <label>Gestion de Riesgos Crediticios:</label>
+                            <div class="detail_element">
+                                <label>Propósito:</label>
+                                <span>Evaluación del riesgo asociado a diferentes tasas de interés, análisis de exposición al riesgo de tasa de interés</span>
+                            </div>
+                            <div class="detail_element">
+                                <label>Reportería / BI</label>
+                                <span>Informes de riesgo de cartera, análisis de sensibilidad de la deuda, modelos de pérdida esperada.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="table_profile_container" class="table_profile_container" style="display: none;">
+                <h2 class="container_header">Perfilado de la Tabla Seleccionada</h2>
+                <table class="profile_table scale-up-center">
+                    <thead>
+                        <tr>
+                            <th>Columna</th>
+                            <th>Tipo de Dato</th>
+                            <th>Valores Nulos (%)</th>
+                            <th>Duplicados</th>
+                            <th>Valores Únicos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="profile_table_body"></tbody>
+                </table>
+            </section>
+     
+        </section>
+    </main>
+    
+    <script src="{{ url_for('static', filename='js/step_module.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/goverment/gobierno.js') }}"></script>
+</body>
+</html>

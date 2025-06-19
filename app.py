@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request,jsonify
-from src.db.db_connector import get_db_connection,extract_table_data
+from src.db.db_connector import get_db_connection,extract_table_data,get_columns
 from src.services.profiler import profile_table_data,list_all_tables,get_table_info
 from src.services.consistencia_service import procesar_datos
 from src.services.evaluacion_calidad_service import evaluar_matriz_personalizada
@@ -97,7 +97,28 @@ def perfilar_tabla():
     except Exception as e:
         return jsonify({"success": False, "error": f"Error inesperado: {str(e)}"}), 500
 
+@app.route("/obtener_columnas", methods=["POST"])
+def obtener_columnas_endpoint():
+    data = request.get_json()
+    table_name = data.get("table_name")
+    
+    user = "USUARIO_DATAMART_MATERIALIDAD"
+    password = "USUARIO_DATAMART_MATERIALIDAD"
+    host = "localhost"
+    port = "1521"
+    service_name = "XE"
 
+    try:
+        connection = get_db_connection(user, password, host, port, service_name)
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Error al conectar a la BD: {str(e)}"}), 500
+
+    try:
+        columns = get_columns(connection=connection,table_name=table_name)
+        return jsonify({"status": "ok", "columnas": columns})
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Error al traer las columnas: {str(e)}"}), 500
+    
 @app.route('/evaluar_consistencia', methods=['GET'])
 def evaluar_consistencia():
     try:
@@ -175,6 +196,25 @@ def exportar_resultados_view():
 
     return render_template('exportation/exportation.html')
 
+@app.route("/gobierno",methods=['GET'])
+def gobierno_view():
+
+    user = "USUARIO_DATAMART_MATERIALIDAD"
+    password = "USUARIO_DATAMART_MATERIALIDAD"
+    host = "localhost"
+    port = "1521"
+    service_name = "XE"
+
+    
+    connection = get_db_connection(user, password, host, port, service_name)
+
+    table_list = list_all_tables(connection,'oracle')
+
+
+    return render_template('goverment/gobierno.html',tables_info=table_list)
+
+
+
 @app.route("/reportes",methods=['GET'])
 def reporte_view():
 
@@ -186,14 +226,11 @@ def generar_reporte_excel_endpoint():
     if not payload:
         return jsonify({"error": "No JSON recibido"}), 400
 
-    # Genera el Excel y devuelve la ruta
     ruta_archivo = generar_reporte_excel(payload, ruta_salida='./reportes')
 
-    # Asegúrate de que el archivo exista
     if not os.path.exists(ruta_archivo):
         return jsonify({"error": "No se pudo generar el reporte"}), 500
 
-    # Envía el archivo al cliente
     return send_file(
         ruta_archivo,
         as_attachment=True,
@@ -211,18 +248,15 @@ def generar_reporte_pdf():
     dataFormulario = datos["dataFormulario"]
     resultadoEvaluacion = datos["resultadoEvaluacion"]
 
-    # Renderizamos el template con los datos recibidos
     rendered_html = render_template(
         "report/pdf_report.html",
         dataFormulario=dataFormulario,
         resultadoEvaluacion=resultadoEvaluacion
     )
 
-    # Carpeta de salida del PDF
     output_folder = Path("output")
     output_folder.mkdir(exist_ok=True)
 
-    # Guardamos el HTML temporalmente en src/static/temp/
     temp_filename = f"{uuid.uuid4().hex}.html"
     temp_html_path = Path("src") / "static" / "temp" / temp_filename
     temp_html_path.parent.mkdir(parents=True, exist_ok=True)
@@ -230,11 +264,9 @@ def generar_reporte_pdf():
     with open(temp_html_path, "w", encoding="utf-8") as f:
         f.write(rendered_html)
 
-    # Generamos el PDF usando Playwright accediendo por HTTP
     output_pdf_path = output_folder / (dataFormulario.get("nombre_archivo", "reporte") + ".pdf")
-    export_html_to_pdf_via_http(temp_filename, output_pdf_path)  # ⚠️ Usamos solo el nombre
+    export_html_to_pdf_via_http(temp_filename, output_pdf_path)
 
-    # Eliminamos el HTML temporal
     os.remove(temp_html_path)
 
     return send_file(output_pdf_path, as_attachment=True)
